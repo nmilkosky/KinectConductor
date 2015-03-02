@@ -110,7 +110,7 @@ namespace Kinect.Recorder
         private int framesSinceBeat = 0;//keep track of how many frames since last beat
         private float BPM = 0; //BPM to be displayed
         private float BPMAvg = 0; //moving average of BPM
-        private float BPMVthreshold = .2F; //threshold for BPM - velocity
+        private float BPMVthreshold = 1.0F; //threshold for BPM - velocity
         private float BPMYthreshold = 0.04F; //threshold for bpm - y
 
 
@@ -1177,7 +1177,7 @@ namespace Kinect.Recorder
 
         private void beatsPM(JointHistory rh)
         {
-            int checkPosition = (rh.locationCounter - 2 + rh.ARRAY_SIZE) % rh.ARRAY_SIZE;
+            int checkPosition = (rh.locationCounter - 3 + rh.ARRAY_SIZE) % rh.ARRAY_SIZE;
             int lastBeatPos = bpmPos;
             if(rh.checkBeat(checkPosition, BPMVthreshold, BPMYthreshold)) //if there is a beat, store it and calculate bpm.
             {

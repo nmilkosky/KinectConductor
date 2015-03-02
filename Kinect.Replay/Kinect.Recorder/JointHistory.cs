@@ -68,7 +68,33 @@ namespace Kinect.Recorder
             }
         }
 
-        public bool checkBeat(int checkLocation, float vThreshold, float yThreshold) //look for a beat at the specified location, with velocity threshold and y threshold
+        public bool checkBeat(int checkLocation, float vThreshold, float yThreshold)
+        /* This method is used to determine if a beat is located at the location specified, and taking into account the special thresholds.
+         * Parameters:
+         *      int checkLocation: the location in the data array to check for a beat
+         *      float vThreshold:  the threshold for the velocity, if it is lower than the threshold discard the results
+         *      float yThreshold:  the threshold for the y displacement, if it is lower discard the results.
+         * Results:
+         *      returns a true or false value. True indicates that a beat was detected at the checked location, false indicates that there was no beat.
+         * */
+        {
+            int[] index = new int[4]; // has to be odd in order to put the checkLocation in the middle.
+            for(int i = 0; i < index.Length; i++)
+                index[i] = (checkLocation + ARRAY_SIZE + i - index.Length / 2 ) % ARRAY_SIZE;
+            float leftAvg = 0; //average velocities on left side
+            float rightAvg = 0; //average velocities on right side
+            for (int j = 0; j < index.Length / 2 - 1; j++)
+                leftAvg += velocity[1,index[j]];
+            for (int k = index.Length / 2; k < index.Length; k++)
+                rightAvg += velocity[1, index[k]];
+            leftAvg = leftAvg / (index.Length / 2);
+            rightAvg = rightAvg / (index.Length / 2);
+            Console.Write("Avges: " + (leftAvg) + " | " + (rightAvg) + "\n");
+            if ((leftAvg < 0 && rightAvg > 0) || (rightAvg < 0 && leftAvg > 0))
+                return (true);
+            return (false);
+        }
+        /*public bool checkBeat(int checkLocation, float vThreshold, float yThreshold) //look for a beat at the specified location, with velocity threshold and y threshold
         {
             if (checkLocation >= 0) //make sure it's valid
             {
@@ -94,6 +120,6 @@ namespace Kinect.Recorder
 
             }
             return (false); //if neither of the above are true, we have no beat
-        }
+        }*/
     }
 }
