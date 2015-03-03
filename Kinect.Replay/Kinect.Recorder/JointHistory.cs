@@ -36,6 +36,7 @@ namespace Kinect.Recorder
                 //Console.Write("Time Diff: " + timeDiff + "\n");
                 velocity[0, locationCounter] = (x - location[0, locationCounter - 1]) / timeDiff; //calculate x velocity
                 velocity[1, locationCounter] = (y - location[1, locationCounter - 1]) / timeDiff; //calc y velocity
+                Console.Write("Velocity: " + velocity[0, locationCounter] + " | " + velocity[1, locationCounter] + "\n");
                 //velocity[2, locationCounter] = (z - location[1, locationCounter - 1]) / timeDiff; //calc z velocity
                 velocity[3, locationCounter] = (float)Math.Atan2(velocity[1, locationCounter], velocity[0, locationCounter]); //calculate absolute velocity - using sum of squares w/o
                                              //+ (velocity[1, locationCounter] * velocity[1, locationCounter]);//square root to save computations
@@ -78,19 +79,30 @@ namespace Kinect.Recorder
          *      returns a true or false value. True indicates that a beat was detected at the checked location, false indicates that there was no beat.
          * */
         {
-            int[] index = new int[4]; // has to be odd in order to put the checkLocation in the middle.
+            int[] index = new int[6]; // has to be odd in order to put the checkLocation in the middle.
             for(int i = 0; i < index.Length; i++)
                 index[i] = (checkLocation + ARRAY_SIZE + i - index.Length / 2 ) % ARRAY_SIZE;
-            float leftAvg = 0; //average velocities on left side
-            float rightAvg = 0; //average velocities on right side
+            float leftAvgX = 0; //average velocities on left side
+            float rightAvgX = 0; //average velocities on right side
+            float leftAvgY = 0; //average velocities on left side
+            float rightAvgY = 0; //average velocities on right side
             for (int j = 0; j < index.Length / 2 - 1; j++)
-                leftAvg += velocity[1,index[j]];
+            {
+                leftAvgX += velocity[0, index[j]];
+                leftAvgY += velocity[1, index[j]];
+            }
             for (int k = index.Length / 2; k < index.Length; k++)
-                rightAvg += velocity[1, index[k]];
-            leftAvg = leftAvg / (index.Length / 2);
-            rightAvg = rightAvg / (index.Length / 2);
-            Console.Write("Avges: " + (leftAvg) + " | " + (rightAvg) + "\n");
-            if ((leftAvg < 0 && rightAvg > 0) || (rightAvg < 0 && leftAvg > 0))
+            {
+                rightAvgX += velocity[0, index[k]];
+                rightAvgY += velocity[0, index[k]];
+            }
+            leftAvgX = leftAvgX / (index.Length / 2);
+            leftAvgY = leftAvgY / (index.Length / 2);
+            rightAvgX = rightAvgX / (index.Length / 2);
+            rightAvgY = rightAvgY / (index.Length / 2);
+            Console.Write("Avges: " + (leftAvgX) + " | " + (rightAvgX) + " || " + (leftAvgY) + " | " + (rightAvgY) + "\n");
+            //If the two sides are oppositely signed, and sufficiently different to believe they are a beat for X and Y
+            if ((((leftAvgX < 0 && rightAvgX > 0) || (rightAvgX < 0 && leftAvgX > 0)) || ((leftAvgY < 0 && rightAvgY > 0) || (rightAvgY < 0 && leftAvgY > 0))) && ((Math.Abs(leftAvgX - rightAvgX) > vThreshold) || (Math.Abs(leftAvgY - rightAvgY) > vThreshold)))
                 return (true);
             return (false);
         }

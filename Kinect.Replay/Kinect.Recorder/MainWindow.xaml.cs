@@ -110,7 +110,7 @@ namespace Kinect.Recorder
         private int framesSinceBeat = 0;//keep track of how many frames since last beat
         private float BPM = 0; //BPM to be displayed
         private float BPMAvg = 0; //moving average of BPM
-        private float BPMVthreshold = 1.0F; //threshold for BPM - velocity
+        private float BPMVthreshold = 0.6F; //threshold for BPM - velocity
         private float BPMYthreshold = 0.04F; //threshold for bpm - y
 
 
@@ -544,8 +544,8 @@ namespace Kinect.Recorder
                     isSwaying(csposition); // check for swaying
                     isLeaning(hposition); // check for leaning/rocking
                     hingeCheck(reposition, leposition); // check for excessive hinge movement
-                    rightHandHist.addData(rwposition.X, rwposition.Y, rwposition.Z);
-                    leftHandHist.addData(lwposition.X, lwposition.Y, lwposition.Z);
+                    rightHandHist.addData(rhposition.X, rhposition.Y, rhposition.Z);
+                    leftHandHist.addData(lhposition.X, lhposition.Y, lhposition.Z);
                     StaccatoLegato(rhposition, lhposition); //Check Stacc vs Leg.
                     beatsPM(rightHandHist); // Calculate beats per min
                 }
@@ -1165,6 +1165,8 @@ namespace Kinect.Recorder
                     else
                         rhPeakAvg = 0;
                 }
+                if (float.IsNaN(rhPeakAvg) || float.IsNaN(lhPeakAvg) || float.IsPositiveInfinity(rhPeakAvg) || float.IsPositiveInfinity(lhPeakAvg))
+                    Console.Write(" nan \n");
                 SvsL = "Pk: " + SLPeaks[0, lastPos] + "/" + SLPeaks[1, lastPos] + " #Pks: " + lhPeakCount + "/" + rhPeakCount + " PkAvg: " + lhPeakAvg + "/" + rhPeakAvg;
                 if (rhPeakAvg < SvLThreshold) // Legato
                     SvsLBG = legatoBrush;
@@ -1177,7 +1179,7 @@ namespace Kinect.Recorder
 
         private void beatsPM(JointHistory rh)
         {
-            int checkPosition = (rh.locationCounter - 3 + rh.ARRAY_SIZE) % rh.ARRAY_SIZE;
+            int checkPosition = (rh.locationCounter - 2 + rh.ARRAY_SIZE) % rh.ARRAY_SIZE;
             int lastBeatPos = bpmPos;
             if(rh.checkBeat(checkPosition, BPMVthreshold, BPMYthreshold)) //if there is a beat, store it and calculate bpm.
             {
@@ -1185,7 +1187,7 @@ namespace Kinect.Recorder
                 {
                     bpmlastBeats[bpmPos] = rh.times[checkPosition];
                     bpmPos++;
-                    if (bpmPos >= 5)
+                    if (bpmPos >= 10)
                         bpmPos = 0;
                     beatCounter++;
                     framesSinceBeat = 0;
@@ -1196,7 +1198,7 @@ namespace Kinect.Recorder
             {
                 TimeSpan diff = bpmlastBeats[lastBeatPos].Subtract(bpmlastBeats[bpmPos]);
                 float diffTime = (float)diff.TotalSeconds;
-                BPM = 240 / diffTime;
+                BPM = 600 / diffTime;
             }
             if (BPMAvg == 0)
                 BPMAvg = BPM;
