@@ -50,6 +50,7 @@ namespace Kinect.Recorder
         private SolidColorBrush swabrush; //for background of swaying box
         private SolidColorBrush leabrush; //for background of leaning box
         private SolidColorBrush svlbrush; //for background of s vs l box
+        private SolidColorBrush bpmbrush; //for background of bpm circle
         private SolidColorBrush goodBrush = new SolidColorBrush(Colors.SpringGreen); //for background of boxes
         private SolidColorBrush badBrush = new SolidColorBrush(Colors.LightPink);
         private SolidColorBrush neutralBrush = new SolidColorBrush(Colors.LightCyan);
@@ -110,7 +111,7 @@ namespace Kinect.Recorder
         private int framesSinceBeat = 0;//keep track of how many frames since last beat
         private float BPM = 0; //BPM to be displayed
         private float BPMAvg = 0; //moving average of BPM
-        private float BPMVthreshold = 0.6F; //threshold for BPM - velocity
+        private float BPMVthreshold = 0.01F; //threshold for BPM - velocity
         private float BPMYthreshold = 0.04F; //threshold for bpm - y
 
 
@@ -249,6 +250,18 @@ namespace Kinect.Recorder
                 if (value.Equals(svlbrush)) return;
                 svlbrush = value;
                 PropertyChanged.Raise(() => SvsLBG);
+            }
+        }
+
+        //BPM Circle brush
+        public SolidColorBrush BPMBG
+        {
+            get { return bpmbrush; }
+            set
+            {
+                if (value.Equals(bpmbrush)) return;
+                bpmbrush = value;
+                PropertyChanged.Raise(() => BPMBG);
             }
         }
 
@@ -545,7 +558,7 @@ namespace Kinect.Recorder
                     isLeaning(hposition); // check for leaning/rocking
                     hingeCheck(reposition, leposition); // check for excessive hinge movement
                     rightHandHist.addData(rhposition.X, rhposition.Y, rhposition.Z);
-                    leftHandHist.addData(lhposition.X, lhposition.Y, lhposition.Z);
+                    //leftHandHist.addData(lhposition.X, lhposition.Y, lhposition.Z);
                     StaccatoLegato(rhposition, lhposition); //Check Stacc vs Leg.
                     beatsPM(rightHandHist); // Calculate beats per min
                 }
@@ -992,11 +1005,19 @@ namespace Kinect.Recorder
         }
 
         private void StaccatoLegato(SkeletonPoint rh, SkeletonPoint lh)
+        /* This method stores and calculates all data relevant to Staccato vs Legato, then uses it to determine whether the user is conducting in staccato or legato.
+         * Parameters:
+         *  SkeletonPoint rh: The right hand coordinates
+         *  SkeletonPoint lh: The left hand coordinates
+         * Results:
+         *  The UI is updated with information about Staccato vs Legato. Update brushes, display relevant debug information.
+         * Notes:
+         *  There is a lot of cleaning up to do here, need to implement JointHistory instead of calculating everything here.*/
         {
-            int currentPos = startPos + iterationNum;
-            int lastPos = currentPos - 1;
-            int lastPos2 = currentPos - 2;
-            int lastPos3 = currentPos - 3;
+            int currentPos = startPos + iterationNum; //most recent position
+            int lastPos = currentPos - 1; //most recent position - 1
+            int lastPos2 = currentPos - 2; //most recent - 2
+            int lastPos3 = currentPos - 3; // most recent - 3
 
             if (currentPos > windowSize) //if the current position is outside of the array, wrap around to the beginning. 
             {
@@ -1010,25 +1031,29 @@ namespace Kinect.Recorder
 
             else if (iterationNum == -4) //If the iteration is -4, we can't calculate anything, can only store displacement of hands
             {
-                SLDist[0, 0] = lh.X;
+                //Store the position for each of the coordinates
+                SLDist[0, 0] = lh.X; 
                 SLDist[1, 0] = lh.Y;
                 SLDist[2, 0] = lh.Z;
                 SLDist[3, 0] = rh.X;
                 SLDist[4, 0] = rh.Y;
                 SLDist[5, 0] = rh.Z;
-                SLTimes[0] = DateTime.Now;
+                SLTimes[0] = DateTime.Now; //Store the time that the points were collected
             }
 
             else if (iterationNum == -3) //If the iteration is -3, we can calculate velocity the first entry
             {
+                //Store position
                 SLDist[0, 1] = lh.X;
                 SLDist[1, 1] = lh.Y;
                 SLDist[2, 1] = lh.Z;
                 SLDist[3, 1] = rh.X;
                 SLDist[4, 1] = rh.Y;
                 SLDist[5, 1] = rh.Z;
-                SLTimes[1] = DateTime.Now;
-                int timeDiff = SLTimes[1].Subtract(SLTimes[0]).Milliseconds;
+                SLTimes[1] = DateTime.Now; //Store time the data was collected
+                int timeDiff = SLTimes[1].Subtract(SLTimes[0]).Milliseconds; //Calculate time difference
+                
+                //Store calculated velocities
                 SLVelocs[0, 1] = calcVeloc(SLDist[0, 1], SLDist[0, 0], timeDiff); //lh x
                 SLVelocs[1, 1] = calcVeloc(SLDist[1, 1], SLDist[1, 0], timeDiff); //lh y
                 SLVelocs[2, 1] = calcVeloc(SLDist[2, 1], SLDist[2, 0], timeDiff); //lh z
@@ -1063,6 +1088,7 @@ namespace Kinect.Recorder
                 SLVelocs[3, 2] = calcVeloc(SLDist[3, 2], SLDist[3, 1], timeDiff); //rh x
                 SLVelocs[4, 2] = calcVeloc(SLDist[4, 2], SLDist[4, 1], timeDiff); //rh y
                 SLVelocs[5, 2] = calcVeloc(SLDist[5, 2], SLDist[5, 1], timeDiff); //rh z
+                
                 //Store composite velocity
                 SLVelocs[6, 2] = calcTotalVeloc(SLVelocs[0, 2], SLVelocs[1, 2], SLVelocs[2, 2]);
                 SLVelocs[8, 2] = calcTotalVeloc(SLVelocs[3, 2], SLVelocs[4, 2], SLVelocs[5, 2]);
@@ -1130,7 +1156,7 @@ namespace Kinect.Recorder
                 SLVelocs[9, lastPos] = calcSmoothed(SLVelocs[8, lastPos2], SLVelocs[8, lastPos], SLVelocs[8, currentPos]);
                 SLPeaks[1, lastPos] = isPeak(SLVelocs[9, lastPos3], SLVelocs[9, lastPos2], SLVelocs[9, lastPos], SLVelocs[9, currentPos]);
                 
-                if(SLPeaks[0,lastPos] == true)
+                if(SLPeaks[0,lastPos] == true) //if there is a peak at the most recent calculated position for the left hand, increase the peak height average
                 {
                     lhPeakCount++;
                     if (lhPeakCount != 0)
@@ -1138,8 +1164,8 @@ namespace Kinect.Recorder
                     else
                         lhPeakAvg = 0;
                 }
-                
-                if(SLPeaks[1,lastPos] == true)
+
+                if (SLPeaks[1, lastPos] == true) //if there is a peak at the most recent calculated position for the right hand, increase the peak height average
                 {
                     rhPeakCount++;
                     if (rhPeakCount != 0)
@@ -1148,7 +1174,7 @@ namespace Kinect.Recorder
                         rhPeakAvg = 0;
                 }
 
-                if (SLPeaks[0, currentPos] == true)
+                if (SLPeaks[0, currentPos] == true) //if there is a peak at the position that will be overwritten for the left hand, take it out of the average
                 {
                     lhPeakCount--;
                     if (lhPeakCount != 0)
@@ -1157,7 +1183,7 @@ namespace Kinect.Recorder
                         lhPeakAvg = 0;
                 }
 
-                if (SLPeaks[1, currentPos] == true)
+                if (SLPeaks[1, currentPos] == true) //if there is a peak at the position that will be overwritten for the right hand, take it out of the average
                 {
                     rhPeakCount--;
                     if (rhPeakCount != 0)
@@ -1165,134 +1191,96 @@ namespace Kinect.Recorder
                     else
                         rhPeakAvg = 0;
                 }
-                if (float.IsNaN(rhPeakAvg) || float.IsNaN(lhPeakAvg) || float.IsPositiveInfinity(rhPeakAvg) || float.IsPositiveInfinity(lhPeakAvg))
-                    Console.Write(" nan \n");
-                SvsL = "Pk: " + SLPeaks[0, lastPos] + "/" + SLPeaks[1, lastPos] + " #Pks: " + lhPeakCount + "/" + rhPeakCount + " PkAvg: " + lhPeakAvg + "/" + rhPeakAvg;
-                if (rhPeakAvg < SvLThreshold) // Legato
+                SvsL = "Pk: " + SLPeaks[0, lastPos] + "/" + SLPeaks[1, lastPos] + " #Pks: " + lhPeakCount + "/" + rhPeakCount + " PkAvg: " + lhPeakAvg + "/" + rhPeakAvg; //Display peak information
+                if (rhPeakAvg < SvLThreshold) // If we are under the Staccato threshold, we are legato, so update the brush accordingly
                     SvsLBG = legatoBrush;
                 
-                else //Staccato
+                else //we are not legato, so update the brush.
                     SvsLBG = staccatoBrush;
             }
             iterationNum++;
         }
 
         private void beatsPM(JointHistory rh)
+        /* This method is used to handle the detection of beats - this method does not actually include the detection, but it handles the calculation and display of the BPM and
+         * the 'beat circle' on the UI.
+         * Parameters:
+         *  JointHistory rh: the history of the right hand - this also can detect a beat.
+         * Results:
+         *  The user interface will be updated and display information about the beat detected and the 'beat circle' will turn green for a few frames when a beat is detected. */
         {
-            int checkPosition = (rh.locationCounter - 2 + rh.ARRAY_SIZE) % rh.ARRAY_SIZE;
-            int lastBeatPos = bpmPos;
-            if(rh.checkBeat(checkPosition, BPMVthreshold, BPMYthreshold)) //if there is a beat, store it and calculate bpm.
+            int checkPosition = (rh.locationCounter - 2 + rh.ARRAY_SIZE) % rh.ARRAY_SIZE; // The check position is 2 behind the most recent data point - have to use modulus to avoid going out of bounds
+            int lastBeatPos = bpmPos; //assign the last beat position to the position that will be updated in this method
+            if (framesSinceBeat > 14 && rh.checkBeat(checkPosition, BPMVthreshold, BPMYthreshold)) //if there is a beat and there hasn't been one in a few frames, store it and calculate bpm
             {
-                if (framesSinceBeat > 4) // if there hasn't been a detected beat in a few frames, we can say that it is a different beat than the last
-                {
-                    bpmlastBeats[bpmPos] = rh.times[checkPosition];
-                    bpmPos++;
-                    if (bpmPos >= 10)
-                        bpmPos = 0;
-                    beatCounter++;
-                    framesSinceBeat = 0;
-                }
-                framesSinceBeat++;
+                bpmlastBeats[bpmPos] = rh.times[checkPosition]; //add latest beat to the array of beats
+                bpmPos++; //increment counter to next open position
+                if (bpmPos >= 10) //if we go out of bounds, move the next open position to 0
+                    bpmPos = 0;
+                beatCounter++; //increase the number of beats counter
+                framesSinceBeat = 0; //reset the frames since beat
             }
+            framesSinceBeat++; //increment the frames since last beat
+            if (framesSinceBeat <= 8) //we make use of the frames since beat to allow the 'bpm circle' to have the color linger instead of flickering when a beat is detected
+                BPMBG = goodBrush;
+            else //reset the circle to 'no beat' after a few frames
+                BPMBG = neutralBrush;
             if (beatCounter >= 10 && lastBeatPos != bpmPos) //if we have enough data to calculate bpm, and if we have calculated a beat
             {
-                TimeSpan diff = bpmlastBeats[lastBeatPos].Subtract(bpmlastBeats[bpmPos]);
-                float diffTime = (float)diff.TotalSeconds;
-                BPM = 600 / diffTime;
+                TimeSpan diff = bpmlastBeats[lastBeatPos].Subtract(bpmlastBeats[bpmPos]); //calculate the difference between the most recent (lastBeatPos) and the oldest (bpmPos)
+                float diffTime = (float)diff.TotalSeconds;  //convert the total seconds to a float in order to calculate the BPM
+                BPM = 60*9 / diffTime; //Since we are using the difference over the last 10 beats using difference in seconds, we divide 60 seconds/min * 9 beats by the difference in time
             }
-            if (BPMAvg == 0)
+            if (BPMAvg == 0) //the first time we calculate the bpm, the Avg will be 0 so we instead just update it to the calculated number
                 BPMAvg = BPM;
-            else
+            else //this makes the change in detected BPM look smoother for the user
                 BPMAvg = (BPMAvg * 9 + BPM) / 10; //calculate moving average
-            if (framesSinceBeat == 1)
-                BPMFB = "BPM: " + Math.Round(BPMAvg, 0) + " Beat Detected";
-            else
-                BPMFB = "BPM: " + Math.Round(BPMAvg, 0);
-                
-        }
-        private int mod(int a, int n)
-        {
-            int result = a % n;
-            if ((a < 0 && n > 0) || (a > 0 && n < 0))
-                result += n;
-            return result;
+            BPMFB = "BPM: " + Math.Round(BPMAvg, 0);
         }
 
-        /*private void beatsPM(SkeletonPoint rh) //OLD
-        {
-            if(bpmPos >= 20)
-                bpmPos = 0;
-            bpmlastPositions[0, bpmPos] = rh.X;
-            bpmlastPositions[1, bpmPos] = rh.Y;
-            float leftSideAvg = 0;
-            float rtSideAvg = 0;
-            int checkingPos = 0;
-            //check for beat
-            for(int i = 1; i < 4; i++) // on the left side of a point in time, look for the average
-            {
-                checkingPos = bpmPos - (i + 4);
-                if (checkingPos < 0)
-                    checkingPos = bpmlastVelocities.Length + checkingPos;
-                leftSideAvg += bpmlastVelocities[checkingPos];
-            }
-            leftSideAvg = leftSideAvg / 3;
-
-            for (int i = 1; i < 4; i++) // on the right side of a point in time, look for the average
-            {
-                checkingPos = bpmPos - (4 - i);
-                if (checkingPos < 0)
-                    checkingPos = bpmlastVelocities.Length + checkingPos;
-                rtSideAvg += bpmlastVelocities[checkingPos];
-            }
-            rtSideAvg = rtSideAvg / 3;
-            checkingPos = bpmPos - 4;
-            if (checkingPos < 0)
-                checkingPos = bpmlastVelocities.Length + checkingPos;
-            float leftDiff = bpmlastVelocities[checkingPos] - leftSideAvg;
-            float rtDiff = bpmlastVelocities[checkingPos] - rtSideAvg;
-            if((leftDiff > BPMthreshold  && rtDiff  > BPMthreshold )||(leftDiff < (-1*BPMthreshold) && rtDiff < (-1*BPMthreshold))) // if the point is higher or lower than the points around it, we have a beat
-            {
-                bpmlastBeats[curBeatPos] = DateTime.Now;
-                int firstBeatPos = curBeatPos + 1;
-                if (firstBeatPos == 20)
-                    firstBeatPos = 0;
-                if (beatCounter < 20)
-                {
-                    beatCounter++;
-                    BPM = -1;
-                }
-                else
-                {
-                    TimeSpan diff = bpmlastBeats[curBeatPos].Subtract(bpmlastBeats[firstBeatPos]);
-                    float diffTime = diff.Seconds + (diff.Milliseconds / 1000);
-                    BPM = 1200 / diffTime;
-                }
-                curBeatPos = firstBeatPos;
-            }
-            BPMFB = "BPM: " + BPM + " Beat Counter: " + beatCounter;
-            bpmPos++;
-        } */
-
-        //Calculates velocity
         private float calcVeloc(float currDisp, float pastDisp, int timeDiff)
+        /* This method calculates the velocity using displacement and time parameters.
+         * Parameters: 
+         *  float currDisp: the more recent displacement data point
+         *  float pastDisp: the older displacement data point
+         *  int timeDiff: the difference (in milliseconds) between the times of the two displacement parameters
+         * Results:
+         *  Returns the calculated velocity using the velocity formula, in units/ms */
         {
             return ((currDisp - pastDisp)*1000/ timeDiff);
         }
 
-        //Calculates the smoothed value at a point, where 1 is the center point
         private float calcSmoothed(float prevPos, float curPos, float nextPos)
+        /* This method will average the value of the 3 parameters. This is used to smooth the data in order to better calculate peaks.
+         * Parameters:
+         *  float prevPos, curPos, nextPos: the 3 values that will be smoothed together. They are named in terms of position that will be passed from the Staccato vs Legato detection.
+         * Results:
+         *  The average of the 3 positions is returned. */
         {
             return ((prevPos + curPos + prevPos)/3);
         }
 
-        //Checks for a peak at a certain point (position 2 in array)
-        //Determines a peak if the point is greater than the average of the previous 2 points, and greater than the point after it
         private bool isPeak(float prevPos2, float prevPos, float curPos, float nextPos)
+        /* This method will determine if there is a peak around a specific data point.
+         * Parameters:
+         *  float prevPos2: the value of the data point that is two positions before the point being examined for a peak
+         *  float prevPos: the value of the data point before the point being examined for a peak
+         *  float curPos: the value of the data point being examined
+         *  float nextPos: the value of the data point after the one being examined
+         * Results:
+         *  A boolean is returned, true if a peak has been found, or false if the formula does not find a peak. */
         {
             return((curPos > (prevPos2+prevPos)/2)&&(curPos > nextPos));
         }
-        //Calculate the total velocity, considering all 3 axes
+
         private float calcTotalVeloc(float x, float y, float z)
+        /* This method calculates the total velocity using the sum of squares (the square root has been left out to save computation time).
+         * Parameters:
+         *  float x: the x velocity
+         *  float y: the y velocity
+         *  float z: the z velocity
+         * Results:
+         *  The sum of squares is returned. */
         {
             return((x*x) + (y*y) + (z*z));
         }
@@ -1302,6 +1290,12 @@ namespace Kinect.Recorder
         // re = right elbow
         // le = left elbow
         private void hingeCheck(SkeletonPoint re, SkeletonPoint le)
+        /* Performs check of hinge movement.
+         * Parameters:
+         *  SkeletonPoint re: Point for the right elbow.
+         *  SkeletonPoint le: Point for the left elbow.
+         * Results:
+         *  Detects whether there is excessive hinge movement. */
         {
             int movAvgNum = 7; // size of moving average; this should be smaller than the array length
 
@@ -1353,9 +1347,7 @@ namespace Kinect.Recorder
                 elbowR = elbowR / movAvgNum;
                 
                 if (pastElbowL.Max() > hingeThreshold || pastElbowR.Max() > hingeThreshold)
-                //if (elbowL > threshold || elbowR > threshold)
                 {
-                    //Feedback += "Too much elbow hinge movement.";
                     hingePct++;
                 }
             } // close if statement for full buffer

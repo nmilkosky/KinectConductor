@@ -46,7 +46,7 @@
                     <Canvas Name="SkeletonCanvas" Height="480" Width="640" HorizontalAlignment="Center" Background="Transparent" />
                 </Grid>
             </StackPanel>
-            <StackPanel Orientation="Vertical" Background="AliceBlue" Width="400" Height="507">
+            <StackPanel Orientation="Vertical" Background="AliceBlue" Width="400" Height="577">
                 <!--This is the button panel-->
                 <StackPanel Orientation="Vertical" Width="300" Margin="10">
                     <StackPanel Orientation="Horizontal">
@@ -76,7 +76,8 @@
                     <TextBlock Text="Staccato/Legato" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="0"/>
                     <TextBlock Text="{Binding SvsL}" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="10"/>
                 </StackPanel>
-                <TextBlock Text="{Binding BPMFB}" FontSize="24" Foreground="Black" HorizontalAlignment="Center" Margin="10"/>
+                <TextBlock Text="{Binding BPMFB}" FontSize="24" Foreground="Black" Margin="0,10,100,10" HorizontalAlignment="Right" Width="200"/>
+                <Ellipse Fill="{Binding BPMBG}" Height="51" Stroke="Black" Margin="175,0,0,0" RenderTransformOrigin="0.469,0.506" HorizontalAlignment="Left" Width="51"/>
             </StackPanel>
         </StackPanel>
     </StackPanel>

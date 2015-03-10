@@ -26,7 +26,9 @@ namespace Kinect.Recorder
         public void addData(float x, float y, float z) // add a piece of data to the arrays
         {
             location[0, locationCounter] = x; //assign x position
+            Console.Write("X: " + x + "\n");
             location[1, locationCounter] = y; //assign y position
+            Console.Write("Y: " + y + "\n");
             //location[2, locationCounter] = z; //assign z position
             times[locationCounter] = DateTime.Now; //record current time
             float timeDiff = 0;
@@ -34,8 +36,8 @@ namespace Kinect.Recorder
             {
                 timeDiff = (float)((times[locationCounter].Subtract(times[locationCounter - 1])).TotalSeconds); //calculate the time difference between the last two data points in seconds
                 //Console.Write("Time Diff: " + timeDiff + "\n");
-                velocity[0, locationCounter] = (x - location[0, locationCounter - 1]) / timeDiff; //calculate x velocity
-                velocity[1, locationCounter] = (y - location[1, locationCounter - 1]) / timeDiff; //calc y velocity
+                velocity[0, locationCounter] = (x - location[0, locationCounter - 1]); //calculate x velocity
+                velocity[1, locationCounter] = (y - location[1, locationCounter - 1]); //calc y velocity
                 Console.Write("Velocity: " + velocity[0, locationCounter] + " | " + velocity[1, locationCounter] + "\n");
                 //velocity[2, locationCounter] = (z - location[1, locationCounter - 1]) / timeDiff; //calc z velocity
                 velocity[3, locationCounter] = (float)Math.Atan2(velocity[1, locationCounter], velocity[0, locationCounter]); //calculate absolute velocity - using sum of squares w/o
@@ -79,7 +81,7 @@ namespace Kinect.Recorder
          *      returns a true or false value. True indicates that a beat was detected at the checked location, false indicates that there was no beat.
          * */
         {
-            int[] index = new int[6]; // has to be odd in order to put the checkLocation in the middle.
+            int[] index = new int[4]; // has to be even
             for(int i = 0; i < index.Length; i++)
                 index[i] = (checkLocation + ARRAY_SIZE + i - index.Length / 2 ) % ARRAY_SIZE;
             float leftAvgX = 0; //average velocities on left side
@@ -94,16 +96,24 @@ namespace Kinect.Recorder
             for (int k = index.Length / 2; k < index.Length; k++)
             {
                 rightAvgX += velocity[0, index[k]];
-                rightAvgY += velocity[0, index[k]];
+                rightAvgY += velocity[1, index[k]];
             }
             leftAvgX = leftAvgX / (index.Length / 2);
             leftAvgY = leftAvgY / (index.Length / 2);
             rightAvgX = rightAvgX / (index.Length / 2);
             rightAvgY = rightAvgY / (index.Length / 2);
-            Console.Write("Avges: " + (leftAvgX) + " | " + (rightAvgX) + " || " + (leftAvgY) + " | " + (rightAvgY) + "\n");
+            Console.Write("Avges: " + (leftAvgX) + " | " + (rightAvgX) +  " || " + leftAvgY + " | " + rightAvgY +  "\n");
             //If the two sides are oppositely signed, and sufficiently different to believe they are a beat for X and Y
-            if ((((leftAvgX < 0 && rightAvgX > 0) || (rightAvgX < 0 && leftAvgX > 0)) || ((leftAvgY < 0 && rightAvgY > 0) || (rightAvgY < 0 && leftAvgY > 0))) && ((Math.Abs(leftAvgX - rightAvgX) > vThreshold) || (Math.Abs(leftAvgY - rightAvgY) > vThreshold)))
+            bool XBeat = ((leftAvgX < 0 && rightAvgX > 0) || (rightAvgX < 0 && leftAvgX > 0)) && (Math.Abs(rightAvgX - leftAvgX) > vThreshold);
+            if(XBeat)
+                Console.Write("X BEAT DETECTED IN FCN\n");
+            bool YBeat = ((leftAvgY < 0 && rightAvgY > 0) || (rightAvgY < 0 && leftAvgY > 0)) && (Math.Abs(rightAvgY - leftAvgY) > vThreshold);
+            if (YBeat)
+                Console.Write("Y BEAT DETECTED IN FCN\n");
+            if (XBeat || YBeat)
+            {
                 return (true);
+            }
             return (false);
         }
         /*public bool checkBeat(int checkLocation, float vThreshold, float yThreshold) //look for a beat at the specified location, with velocity threshold and y threshold
