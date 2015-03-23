@@ -1205,7 +1205,7 @@ namespace Kinect.Recorder
         /* This method is used to handle the detection of beats - this method does not actually include the detection, but it handles the calculation and display of the BPM and
          * the 'beat circle' on the UI.
          * Parameters:
-         *  JointHistory rh: the history of the right hand - this also can detect a beat.
+         *  JointHistory rh: the history of the right hand - this processes the data.
          * Results:
          *  The user interface will be updated and display information about the beat detected and the 'beat circle' will turn green for a few frames when a beat is detected. */
         {

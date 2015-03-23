@@ -12,19 +12,35 @@ namespace Kinect.Recorder
         public int locationCounter; // counter that determines where we are in the array
         public float[,] location; // array of locations in Kinect Units
         public float[,] velocity; // array of velocities in Kinect Units/sec
+        public float[] lastBeatLoc; //the position in x and y coordinates of the last beat location
         public DateTime[] times; // array of times for data above
 
         public JointHistory() // constructor, builds the arrays
+        /* The constructor for the JointHistory class.
+         * Parameters: None
+         * Results:
+         *  A JointHistory object is constructed. */
         {
             locationCounter = 0;
             hasLooped = false;
             location = new float[3,ARRAY_SIZE]; // 1 dimension for each axis - x, y, z
             velocity = new float[4,ARRAY_SIZE]; // 1 dimension for each axis, as well as combined velocity - x, y, z, combined
             times = new DateTime[ARRAY_SIZE]; // the times when each data point is recorded, in order to determine velocity or beats
+            lastBeatLoc = new float[2]; // index 0 - x location, index 1 - y location
+            lastBeatLoc[0] = -1000; //initial value doesn't matter as long as it isn't close to where the actual location could be
+            lastBeatLoc[1] = -1000;
         }
 
         public void addData(float x, float y, float z) // add a piece of data to the arrays
         {
+        /* This method is used to add data to the JointHistory object.
+         * Parameters:
+         *      float x:  the x (horizontal) location for the point
+         *      float y:  the y (vertical) location for the point
+         *      float z:  the z (depth) location for the point
+         * Results:
+         *      the location, times, and velocity arrays are updated with the most recent information.
+         * */
             location[0, locationCounter] = x; //assign x position
             Console.Write("X: " + x + "\n");
             location[1, locationCounter] = y; //assign y position
@@ -71,7 +87,7 @@ namespace Kinect.Recorder
             }
         }
 
-        public bool checkBeat(int checkLocation, float vThreshold, float yThreshold)
+        public bool checkBeat(int checkLocation, float vThreshold, float dThreshold)
         /* This method is used to determine if a beat is located at the location specified, and taking into account the special thresholds.
          * Parameters:
          *      int checkLocation: the location in the data array to check for a beat
@@ -105,43 +121,12 @@ namespace Kinect.Recorder
             Console.Write("Avges: " + (leftAvgX) + " | " + (rightAvgX) +  " || " + leftAvgY + " | " + rightAvgY +  "\n");
             //If the two sides are oppositely signed, and sufficiently different to believe they are a beat for X and Y
             bool XBeat = ((leftAvgX < 0 && rightAvgX > 0) || (rightAvgX < 0 && leftAvgX > 0)) && (Math.Abs(rightAvgX - leftAvgX) > vThreshold);
-            if(XBeat)
-                Console.Write("X BEAT DETECTED IN FCN\n");
             bool YBeat = ((leftAvgY < 0 && rightAvgY > 0) || (rightAvgY < 0 && leftAvgY > 0)) && (Math.Abs(rightAvgY - leftAvgY) > vThreshold);
-            if (YBeat)
-                Console.Write("Y BEAT DETECTED IN FCN\n");
-            if (XBeat || YBeat)
-            {
+            //Make sure it is a sufficent distance away from the last beat (if it's false, that means it is too close, true means it is sufficiently far to be its own beat).
+            bool notTooClose = ((Math.Abs(lastBeatLoc[0] - location[0, checkLocation]) > dThreshold) || (Math.Abs(lastBeatLoc[1] - location[1, checkLocation]) > dThreshold));
+            if ((XBeat || YBeat) && notTooClose)
                 return (true);
-            }
             return (false);
         }
-        /*public bool checkBeat(int checkLocation, float vThreshold, float yThreshold) //look for a beat at the specified location, with velocity threshold and y threshold
-        {
-            if (checkLocation >= 0) //make sure it's valid
-            {
-                int prev2Loc = (checkLocation + ARRAY_SIZE - 2) % ARRAY_SIZE; 
-                int prevLoc = (checkLocation + ARRAY_SIZE - 1) % ARRAY_SIZE; //location before the beat we are checking 
-                int nextLoc = (checkLocation + 1) % ARRAY_SIZE; // location after the beat we are checking
-                int next2Loc = (checkLocation + 2) % ARRAY_SIZE;
-                if ((checkLocation < 2) && !hasLooped) //if it's at location 0 or 1 and we haven't looped, it is too early to calculate a beat
-                    return (false);
-                Console.Write("Velocity Change: " + (velocity[3, checkLocation] - velocity[3, prevLoc]) + " " + (velocity[3, checkLocation] - velocity[3, nextLoc]) + "\n");
-                Console.Write("Location: " + (location[1, prevLoc] - location[1, checkLocation]) + " " + (location[1, nextLoc] - location[1, checkLocation]) + "\n");
-                if (velocity[3, checkLocation] - velocity[3, prevLoc] > vThreshold && velocity[3, checkLocation] - velocity[3, nextLoc] > vThreshold
-                    && velocity[3, checkLocation] - velocity[3, prev2Loc] > vThreshold && velocity[3, checkLocation] - velocity[3, next2Loc] > vThreshold) //if we have a local maxima, and it is above the threshold, a beat has been detected.
-                {
-                    Console.Write("VELOCITY-MAXIMA BEAT \n");
-                    return (true);
-                }
-                if (location[1, prevLoc] - location[1, checkLocation] > yThreshold && location[1, nextLoc] - location[1, checkLocation] > yThreshold) //if we have a local y minima, we have a beat.
-                {
-                    Console.Write("Y-MINIMA BEAT \n");
-                    return (true);
-                }
-
-            }
-            return (false); //if neither of the above are true, we have no beat
-        }*/
     }
 }
