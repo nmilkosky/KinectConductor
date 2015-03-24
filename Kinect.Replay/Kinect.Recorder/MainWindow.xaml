@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Loaded="MainWindowLoaded"
         DataContext="{Binding RelativeSource={RelativeSource Self}}" 
-        SizeToContent="WidthAndHeight" Height="748.082">
+        SizeToContent="WidthAndHeight" Height="733.157">
     <Window.Resources>
         <Style TargetType="Button" x:Key="RecordButton">
             <Setter Property="Content" Value="Record" />
@@ -36,7 +36,7 @@
         </Style>
     </Window.Resources>
     <StackPanel>
-        <TextBlock Text="Kinect Conducting Recorder" FontSize="28" HorizontalAlignment="Center"/>
+        <TextBlock Text="Kinect Conducting Recorder" FontSize="28" HorizontalAlignment="Center" Height="25"/>
         <TextBlock Text="{Binding Message}" FontSize="24" Foreground="Red" HorizontalAlignment="Left" Margin="5"/>
         <StackPanel Orientation="Horizontal" Margin="3">
             <!--This is the display-->

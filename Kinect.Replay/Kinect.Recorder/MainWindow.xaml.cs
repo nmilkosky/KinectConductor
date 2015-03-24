@@ -1022,10 +1022,10 @@ namespace Kinect.Recorder
                     MirroringBG = badBrush;
                     mirrorPct++; // increment mirroring percentage counter
                 }
-                else { MirroringBG = goodBrush; }
             }
             else // user is not mirroring
             {
+                MirroringBG = goodBrush;
                 mirrorBuffer = 0; // reset buffer
             }
         }
