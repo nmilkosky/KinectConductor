@@ -45,11 +45,13 @@ namespace Kinect.Recorder
         private string swafdbk; // for displaying swaying feedback
         private string leafdbk; // for displaying leaning feedback
         private string svlfdbk; // for staccato vs legato feedback
-        private string bpmfdbk; // for staccato vs legato feedback
+        private string hingefdbk; // for hinge movement feedback
+        private string bpmfdbk; // for bpm feedback
         private SolidColorBrush mirbrush; //for background of mirroring box
         private SolidColorBrush swabrush; //for background of swaying box
         private SolidColorBrush leabrush; //for background of leaning box
         private SolidColorBrush svlbrush; //for background of s vs l box
+        private SolidColorBrush hingebrush; //for background of s vs l box
         private SolidColorBrush bpmbrush; //for background of bpm circle
         private SolidColorBrush goodBrush = new SolidColorBrush(Colors.SpringGreen); //for background of boxes
         private SolidColorBrush badBrush = new SolidColorBrush(Colors.LightPink);
@@ -111,8 +113,8 @@ namespace Kinect.Recorder
         private int framesSinceBeat = 0;//keep track of how many frames since last beat
         private float BPM = 0; //BPM to be displayed
         private float BPMAvg = 0; //moving average of BPM
-        private float BPMVthreshold = 0.01F; //threshold for BPM - velocity
-        private float BPMYthreshold = 0.04F; //threshold for bpm - y
+        private float BPMVthreshold = 0.012F; //threshold for BPM - velocity
+        private float BPMDthreshold = 0.10F; //threshold for bpm - distance
 
 
         // Hinges
@@ -197,6 +199,18 @@ namespace Kinect.Recorder
             }
         }
 
+        // for displaying feedback for Hinge Movement
+        public string Hinge
+        {
+            get { return hingefdbk; }
+            set
+            {
+                if (value.Equals(hingefdbk)) return;
+                hingefdbk = value;
+                PropertyChanged.Raise(() => Hinge);
+            }
+        }
+
         //for displaying BPM
         public string BPMFB
         {
@@ -250,6 +264,17 @@ namespace Kinect.Recorder
                 if (value.Equals(svlbrush)) return;
                 svlbrush = value;
                 PropertyChanged.Raise(() => SvsLBG);
+            }
+        }
+
+        public SolidColorBrush HingeBG
+        {
+            get { return svlbrush; }
+            set
+            {
+                if (value.Equals(hingebrush)) return;
+                hingebrush = value;
+                PropertyChanged.Raise(() => HingeBG);
             }
         }
 
@@ -414,6 +439,7 @@ namespace Kinect.Recorder
             SwayingBG = neutralBrush;
             LeaningBG = neutralBrush;
             SvsLBG = neutralBrush;
+            HingeBG = neutralBrush;
         }
 
         // check for changed properties
@@ -1211,7 +1237,7 @@ namespace Kinect.Recorder
         {
             int checkPosition = (rh.locationCounter - 2 + rh.ARRAY_SIZE) % rh.ARRAY_SIZE; // The check position is 2 behind the most recent data point - have to use modulus to avoid going out of bounds
             int lastBeatPos = bpmPos; //assign the last beat position to the position that will be updated in this method
-            if (framesSinceBeat > 14 && rh.checkBeat(checkPosition, BPMVthreshold, BPMYthreshold)) //if there is a beat and there hasn't been one in a few frames, store it and calculate bpm
+            if (framesSinceBeat > 12 && rh.checkBeat(checkPosition, BPMVthreshold, BPMDthreshold)) //if there is a beat and there hasn't been one in a few frames, store it and calculate bpm
             {
                 bpmlastBeats[bpmPos] = rh.times[checkPosition]; //add latest beat to the array of beats
                 bpmPos++; //increment counter to next open position
@@ -1221,7 +1247,7 @@ namespace Kinect.Recorder
                 framesSinceBeat = 0; //reset the frames since beat
             }
             framesSinceBeat++; //increment the frames since last beat
-            if (framesSinceBeat <= 8) //we make use of the frames since beat to allow the 'bpm circle' to have the color linger instead of flickering when a beat is detected
+            if (framesSinceBeat <= 6) //we make use of the frames since beat to allow the 'bpm circle' to have the color linger instead of flickering when a beat is detected
                 BPMBG = goodBrush;
             else //reset the circle to 'no beat' after a few frames
                 BPMBG = neutralBrush;
@@ -1349,6 +1375,11 @@ namespace Kinect.Recorder
                 if (pastElbowL.Max() > hingeThreshold || pastElbowR.Max() > hingeThreshold)
                 {
                     hingePct++;
+                    hingebrush = badBrush;
+                }
+                else
+                {
+                    hingebrush = goodBrush;
                 }
             } // close if statement for full buffer
         } // end hingeCheck method

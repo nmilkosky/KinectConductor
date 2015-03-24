@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Loaded="MainWindowLoaded"
         DataContext="{Binding RelativeSource={RelativeSource Self}}" 
-        SizeToContent="WidthAndHeight">
+        SizeToContent="WidthAndHeight" Height="748.082">
     <Window.Resources>
         <Style TargetType="Button" x:Key="RecordButton">
             <Setter Property="Content" Value="Record" />
@@ -46,7 +46,7 @@
                     <Canvas Name="SkeletonCanvas" Height="480" Width="640" HorizontalAlignment="Center" Background="Transparent" />
                 </Grid>
             </StackPanel>
-            <StackPanel Orientation="Vertical" Background="AliceBlue" Width="400" Height="577">
+            <StackPanel Orientation="Vertical" Background="AliceBlue" Width="400" Height="638">
                 <!--This is the button panel-->
                 <StackPanel Orientation="Vertical" Width="300" Margin="10">
                     <StackPanel Orientation="Horizontal">
@@ -75,6 +75,10 @@
                 <StackPanel Height="60" Margin="25,10,10,0" Background="{Binding SvsLBG}">
                     <TextBlock Text="Staccato/Legato" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="0"/>
                     <TextBlock Text="{Binding SvsL}" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="10"/>
+                </StackPanel>
+                <StackPanel Height="60" Margin="25,10,10,0" Background="{Binding HingeBG}">
+                    <TextBlock Text="Excessive Hinge Movement" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="0"/>
+                    <TextBlock Text="{Binding Hinge}" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="10"/>
                 </StackPanel>
                 <TextBlock Text="{Binding BPMFB}" FontSize="24" Foreground="Black" Margin="0,10,100,10" HorizontalAlignment="Right" Width="200"/>
                 <Ellipse Fill="{Binding BPMBG}" Height="51" Stroke="Black" Margin="175,0,0,0" RenderTransformOrigin="0.469,0.506" HorizontalAlignment="Left" Width="51"/>

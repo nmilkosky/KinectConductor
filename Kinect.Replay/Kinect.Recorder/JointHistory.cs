@@ -92,7 +92,7 @@ namespace Kinect.Recorder
          * Parameters:
          *      int checkLocation: the location in the data array to check for a beat
          *      float vThreshold:  the threshold for the velocity, if it is lower than the threshold discard the results
-         *      float yThreshold:  the threshold for the y displacement, if it is lower discard the results.
+         *      float dThreshold:  the threshold that determines whether the beat is far enough away to be considered its own beat.
          * Results:
          *      returns a true or false value. True indicates that a beat was detected at the checked location, false indicates that there was no beat.
          * */
@@ -123,9 +123,16 @@ namespace Kinect.Recorder
             bool XBeat = ((leftAvgX < 0 && rightAvgX > 0) || (rightAvgX < 0 && leftAvgX > 0)) && (Math.Abs(rightAvgX - leftAvgX) > vThreshold);
             bool YBeat = ((leftAvgY < 0 && rightAvgY > 0) || (rightAvgY < 0 && leftAvgY > 0)) && (Math.Abs(rightAvgY - leftAvgY) > vThreshold);
             //Make sure it is a sufficent distance away from the last beat (if it's false, that means it is too close, true means it is sufficiently far to be its own beat).
-            bool notTooClose = ((Math.Abs(lastBeatLoc[0] - location[0, checkLocation]) > dThreshold) || (Math.Abs(lastBeatLoc[1] - location[1, checkLocation]) > dThreshold));
+            float distance = Math.Abs((lastBeatLoc[0]*lastBeatLoc[0] + lastBeatLoc[1]*lastBeatLoc[1]) - (location[0,checkLocation]*location[0,checkLocation] + location[1,checkLocation]*location[1,checkLocation])); // no sqrt to save computation
+            bool notTooClose = (distance > dThreshold*dThreshold);
+            Console.Write(notTooClose);
+            Console.Write("\n Distance: " + distance + "\n");
             if ((XBeat || YBeat) && notTooClose)
+            {
+                lastBeatLoc[0] = location[0, checkLocation]; // update the last beat location
+                lastBeatLoc[1] = location[1, checkLocation]; // update the last beat location
                 return (true);
+            }
             return (false);
         }
     }
