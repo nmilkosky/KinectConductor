@@ -6,9 +6,11 @@ using System.Media;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.IO;
+using System.Text;
 using Kinect.Replay.Record;
 using Kinect.Replay.Replay;
 using Kinect.Replay.Replay.Color;
@@ -26,7 +28,7 @@ namespace Kinect.Recorder
         private KinectSensor myKinect; // variable to interface with Kinect
         private bool _kinectPresent;
 
-        //Default threshold values
+        //Constant values
         private const float SWAY_THRESHOLD = 0.02f; //default swaying threshold
         private const float LEAN_THRESHOLD = 0.05f; //default leaning/rocking threshold
         private const float MIRRORING_THRESHOLD = 0.19f; //default mirroring threshold
@@ -35,6 +37,8 @@ namespace Kinect.Recorder
         private const int SVL_WINDOW_SIZE = 100; //default staccato vs legato window size
         private const float BPM_V_THRESHOLD = 0.012f; //default bpm velocity threshold
         private const float BPM_D_THRESHOLD = 0.10f; //default bpm distance threshold
+        private const String FILE_PREFIX = "StudentReport"; //title for file name of report generation
+        private const Key SAVE_RESULTS_KEY = Key.O;
 
         // Variables for record/replay/display
         private Kinect.Replay.Record.KinectRecorder newrec; // to handle recording
@@ -79,6 +83,7 @@ namespace Kinect.Recorder
         private int readyPtr = 0; // to keep track of location in  ready buffer
         private float[] pastReady = new float[20]; // buffer to look for ready state
         private long totalPct = 0; // to keep track of total frames for percentages
+        private int studentNo = 1; //keeps track of the number of the student that is being analyzed - in order to output to file
 
         // Swaying (side to side)
         private float[] pastSwaying = new float[20]; // buffer to check for swaying
@@ -102,7 +107,7 @@ namespace Kinect.Recorder
         // Staccato vs Legato
         private int windowSizeSlider = SVL_WINDOW_SIZE; // window size - from slider.
         private int windowSize = SVL_WINDOW_SIZE; //window size 
-        private int staccatoPct = 0; //percentage staccato
+        private long staccatoPct = 0; //percentage staccato
         private int iterationNum = -4; // -3 indicates a start where we have no prior info about accel and velocity.
         private int startPos = 0; // position in array of first value
         private DateTime[] SLTimes = new DateTime[302]; // array that stores the time of recording positions
@@ -282,7 +287,7 @@ namespace Kinect.Recorder
 
         public SolidColorBrush HingeBG
         {
-            get { return svlbrush; }
+            get { return hingebrush; }
             set
             {
                 if (value.Equals(hingebrush)) return;
@@ -807,6 +812,7 @@ namespace Kinect.Recorder
             isAnalyzing = false; // to keep track of analysis state
             readyPtr = 0; // to keep track of location in  ready buffer
             totalPct = 0; // to keep track of total frames for percentages
+            pastReady = new float[20]; //past ready
             
             //Swaying 
             swayPtr = 0; // to keep track of location in swaying buffer
@@ -832,8 +838,8 @@ namespace Kinect.Recorder
             hingePtr = 0;
             hingeFull = false;
             hingePct = 0; // to keep track of percentage of frames with too much hinge movement
-            mirrorThreshold = HINGE_THRESHOLD;
-            
+            hingeThreshold = HINGE_THRESHOLD;
+            Hinge = "";
 
             //SVL
             windowSizeSlider = SVL_WINDOW_SIZE;
@@ -862,6 +868,7 @@ namespace Kinect.Recorder
             beatCounter = 0; 
             framesSinceBeat = 0;
             BPM = 0;
+            BPMFB = "";
             totalBPM = 0;
             BPMAvg = 0; 
             BPMVthreshold = BPM_V_THRESHOLD; 
@@ -970,7 +977,7 @@ namespace Kinect.Recorder
 
 
             double percent = (double)swayPct / totalPct * 100;
-            Swaying = "Percentage of time swaying: " + string.Format("{0:0.0}", percent) + "%";
+            Swaying = "Swaying:  " + string.Format("{0:0.0}", percent) + "%";
 
             // store new X coordinate
             pastSwaying[swayPtr] = centerShoulder.X;
@@ -1004,7 +1011,7 @@ namespace Kinect.Recorder
         private void isLeaning(SkeletonPoint head)
         {
             double percent = (double)leanPct / totalPct * 100;
-            Leaning = "Percentage of time rocking: " + string.Format("{0:0.0}", percent) + "%";
+            Leaning = "Rocking: " + string.Format("{0:0.0}", percent) + "%";
 
             // store new X coordinate
             pastLeaning[leanPtr] = head.Z;
@@ -1038,7 +1045,7 @@ namespace Kinect.Recorder
         {
             // Display mirroring percentage
             double percent = (double) mirrorPct / totalPct * 100;
-            Mirroring = "Percentage of time mirroring: " + string.Format("{0:0.0}",percent) + "%";
+            Mirroring = "Mirroring: " + string.Format("{0:0.0}",percent) + "%";
             
             float diffX = Math.Abs(lh.X - (cs.X - rh.X + cs.X)); // left hand X - reflected right hand X
             float diffY = Math.Abs(lh.Y - rh.Y);
@@ -1248,7 +1255,9 @@ namespace Kinect.Recorder
                     else
                         rhPeakAvg = 0;
                 }
-                SvsL = "Pk: " + SLPeaks[0, lastPos] + "/" + SLPeaks[1, lastPos] + " #Pks: " + lhPeakCount + "/" + rhPeakCount + " PkAvg: " + lhPeakAvg + "/" + rhPeakAvg; //Display peak information
+                //Below is debug output
+                //SvsL = "Pk: " + SLPeaks[0, lastPos] + "/" + SLPeaks[1, lastPos] + " #Pks: " + lhPeakCount + "/" + rhPeakCount + " PkAvg: " + lhPeakAvg + "/" + rhPeakAvg; //Display peak information
+                SvsL = "Staccato: " + ((double)staccatoPct / totalPct).ToString("P");
                 if (rhPeakAvg < SvLThreshold) // If we are under the Staccato threshold, we are legato, so update the brush accordingly
                 {
                     SvsLBG = legatoBrush;
@@ -1411,12 +1420,14 @@ namespace Kinect.Recorder
                 if (pastElbowL.Max() > hingeThreshold || pastElbowR.Max() > hingeThreshold)
                 {
                     hingePct++;
-                    hingebrush = badBrush;
+                    Hinge = "Excessive Hinge Movement: " + string.Format("{0:0.0}", percent) + "%";
+                    HingeBG = badBrush;
                 }
                 else
                 {
-                    hingebrush = goodBrush;
+                    HingeBG = goodBrush;
                 }
+                
             } // close if statement for full buffer
         } //end hingecheck
 
@@ -1428,9 +1439,35 @@ namespace Kinect.Recorder
          * Results:
          *  Results of conducting trial are printed to a text file, then go back to initial state. */
         {
-
+            String filename = FILE_PREFIX + studentNo.ToString("D3") + ".txt"; //studentNo.ToString("D3") displays it in decimal format with 3 digits (padding with 0 until there are 3)
+            System.IO.StreamWriter reportFile = new StreamWriter(filename);
+            reportFile.WriteLine("Student Report #" + studentNo);
+            reportFile.WriteLine("--------------------------------------------------");
+            reportFile.WriteLine("Mirroring Percent: " + ((double)mirrorPct / totalPct).ToString("P")); // .ToString("P") converts a double to a percent (ex from .267 -> 26.7%)
+            reportFile.WriteLine("Swaying Percent: " + ((double)swayPct / totalPct).ToString("P"));
+            reportFile.WriteLine("Leaning Percent: " + ((double)leanPct / totalPct).ToString("P"));
+            reportFile.WriteLine("Excessive Hinge Movement Percent: " + ((double)hingePct / totalPct).ToString("P"));
+            reportFile.WriteLine("Staccato Percent: " + ((double)staccatoPct / totalPct).ToString("P"));
+            reportFile.WriteLine("Average BPM: " + string.Format("{0:0.0}", totalBPM));
+            reportFile.WriteLine("--------------------------------------------------");
+            reportFile.Close();
+            reset_Click(sender, e);
+            studentNo++;
+        }
+        private void window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        /* This method detects if a key is down.
+         * Parameters:
+         *  object sender - sender of keypress event 
+         *  System.Windows.Input.KeyEventArgs e - arguments from the keypress event.
+         * Results:
+         *  If the save results keypress occurs, run the save results function. */
+        {
+            if (e.Key == SAVE_RESULTS_KEY)
+                save_Click(sender, e);
         }
 
         #endregion
+
+        
     }
 }
