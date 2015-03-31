@@ -11,30 +11,31 @@ namespace Kinect.Recorder
 {
     public partial class SettingsForm : Form
     {
-        public int windowSize;
-        public float mirThresh, swayThresh, leanThresh, hingeThresh, svlThresh, bpmThresh;
-        public SettingsForm(int wiSize, float mT, float sT, float lT, float hT, float svlT, float bpmT)
+        public int windowSize, mirThresh, swayThresh, leanThresh, hingeThresh, svlThresh, bpmvThresh, bpmdThresh;
+        public SettingsForm(int wiSize, int mT, int sT, int lT, int hT, int svlT, int bpmvT, int bpmdT)
         {
             InitializeComponent();
             windowSize = wiSize;
-            SvLWS.Value = windowSize;
+            svlWS.Value = windowSize;
             mirThresh = mT;
-            MTBox.Value = Convert.ToDecimal(mirThresh);
+            mirThr.Value = mirThresh;
             swayThresh = sT;
-            STBox.Value = Convert.ToDecimal(swayThresh);
+            swaThr.Value = swayThresh;
             leanThresh = lT;
-            LTBox.Value = Convert.ToDecimal(leanThresh);
+            leaThr.Value = leanThresh;
             hingeThresh = hT;
-            HTBox.Value = Convert.ToDecimal(hingeThresh);
+            hinThr.Value = hingeThresh;
             svlThresh = svlT;
-            SVLTBox.Value = Convert.ToDecimal(svlThresh);
-            bpmThresh = bpmT;
-            BPMTBox.Value = Convert.ToDecimal(bpmThresh);
+            svlThr.Value = svlThresh;
+            bpmvThresh = bpmvT;
+            bpmvThr.Value = bpmvThresh;
+            bpmdThresh = bpmdT;
+            bpmdThr.Value = bpmdThresh;
         }
 
-        private void SvLWS_ValueChanged(object sender, EventArgs e)
+        private void svlWS_ValueChanged(object sender, EventArgs e)
         {
-            windowSize = Convert.ToInt32(SvLWS.Value);
+            windowSize = svlWS.Value;
         }
 
         private void close_Click(object sender, EventArgs e)
@@ -42,36 +43,60 @@ namespace Kinect.Recorder
             this.Close();
         }
 
-        private void MTBox_ValueChanged(object sender, EventArgs e)
+        private void mirThr_ValueChanged(object sender, EventArgs e)
         {
-            mirThresh = (float)Convert.ToDouble(MTBox.Value);
+            mirThresh = mirThr.Value;
         }
 
-        private void STBox_ValueChanged(object sender, EventArgs e)
+        private void swaThr_ValueChanged(object sender, EventArgs e)
         {
-            swayThresh = (float)Convert.ToDouble(STBox.Value);
+            swayThresh = swaThr.Value;
         }
 
-        private void LTBox_ValueChanged(object sender, EventArgs e)
+        private void leaThr_ValueChanged(object sender, EventArgs e)
         {
-            leanThresh = (float)Convert.ToDouble(LTBox.Value);
+            leanThresh = leaThr.Value;
         }
 
-        private void HTBox_ValueChanged(object sender, EventArgs e)
+        private void hinThr_ValueChanged(object sender, EventArgs e)
         {
-            hingeThresh = (float)Convert.ToDouble(HTBox.Value);
+            hingeThresh = hinThr.Value;
         }
 
-        private void SVLTBox_ValueChanged(object sender, EventArgs e)
+        private void svlThr_ValueChanged(object sender, EventArgs e)
         {
-            svlThresh = (float)Convert.ToDouble(SVLTBox.Value);
+            svlThresh = svlThr.Value;
         }
 
-        private void BPMTBox_ValueChanged(object sender, EventArgs e)
+        private void bpmvThr_ValueChanged(object sender, EventArgs e)
         {
-            bpmThresh = (float)Convert.ToDouble(BPMTBox.Value);
+            bpmvThresh = bpmvThr.Value;
         }
 
+        private void bpmdThr_ValueChanged(object sender, EventArgs e)
+        {
+            bpmdThresh = bpmdThr.Value;
+        }
+
+        private void reset_Click(object sender, EventArgs e)
+        {
+            windowSize = 100;
+            svlWS.Value = 100;
+            mirThresh = 100;
+            mirThr.Value = 100;
+            swayThresh = 100;
+            swaThr.Value = 100;
+            leanThresh = 100;
+            leaThr.Value = 100;
+            hingeThresh = 100;
+            hinThr.Value = 100;
+            svlThresh = 100;
+            svlThr.Value = 100;
+            bpmvThresh = 100;
+            bpmvThr.Value = 100;
+            bpmdThresh = 100;
+            bpmdThr.Value = 100;
+        }
 
     }
 }

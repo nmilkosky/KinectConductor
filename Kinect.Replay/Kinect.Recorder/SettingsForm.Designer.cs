@@ -28,329 +28,271 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.SvLWS = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.okButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.MTBox = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
-            this.STBox = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
-            this.LTBox = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
-            this.HTBox = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
-            this.SVLTBox = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
-            this.BPMTBox = new System.Windows.Forms.NumericUpDown();
-            ((System.ComponentModel.ISupportInitialize)(this.SvLWS)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MTBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.STBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.LTBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.HTBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.SVLTBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BPMTBox)).BeginInit();
+            this.svlWS = new System.Windows.Forms.TrackBar();
+            this.label8 = new System.Windows.Forms.Label();
+            this.svlThr = new System.Windows.Forms.TrackBar();
+            this.mirThr = new System.Windows.Forms.TrackBar();
+            this.leaThr = new System.Windows.Forms.TrackBar();
+            this.bpmvThr = new System.Windows.Forms.TrackBar();
+            this.swaThr = new System.Windows.Forms.TrackBar();
+            this.hinThr = new System.Windows.Forms.TrackBar();
+            this.bpmdThr = new System.Windows.Forms.TrackBar();
+            this.resetButton = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.svlWS)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.svlThr)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mirThr)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.leaThr)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bpmvThr)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.swaThr)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hinThr)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bpmdThr)).BeginInit();
             this.SuspendLayout();
-            // 
-            // SvLWS
-            // 
-            this.SvLWS.Location = new System.Drawing.Point(57, 55);
-            this.SvLWS.Maximum = new decimal(new int[] {
-            250,
-            0,
-            0,
-            0});
-            this.SvLWS.Minimum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.SvLWS.Name = "SvLWS";
-            this.SvLWS.Size = new System.Drawing.Size(120, 20);
-            this.SvLWS.TabIndex = 0;
-            this.SvLWS.Value = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.SvLWS.ValueChanged += new System.EventHandler(this.SvLWS_ValueChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(41, 39);
+            this.label1.Location = new System.Drawing.Point(12, 39);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(165, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "Staccato vs Legato Window Size";
             // 
-            // button1
+            // okButton
             // 
-            this.button1.Location = new System.Drawing.Point(57, 323);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(120, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "OK";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.close_Click);
+            this.okButton.Location = new System.Drawing.Point(221, 298);
+            this.okButton.Name = "okButton";
+            this.okButton.Size = new System.Drawing.Size(120, 23);
+            this.okButton.TabIndex = 2;
+            this.okButton.Text = "OK";
+            this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.Click += new System.EventHandler(this.close_Click);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(67, 119);
+            this.label2.Location = new System.Drawing.Point(41, 103);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(97, 13);
             this.label2.TabIndex = 4;
             this.label2.Text = "Mirroring Threshold";
             // 
-            // MTBox
-            // 
-            this.MTBox.DecimalPlaces = 2;
-            this.MTBox.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.MTBox.Location = new System.Drawing.Point(57, 135);
-            this.MTBox.Maximum = new decimal(new int[] {
-            4,
-            0,
-            0,
-            65536});
-            this.MTBox.Minimum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            131072});
-            this.MTBox.Name = "MTBox";
-            this.MTBox.Size = new System.Drawing.Size(120, 20);
-            this.MTBox.TabIndex = 3;
-            this.MTBox.Value = new decimal(new int[] {
-            19,
-            0,
-            0,
-            131072});
-            this.MTBox.ValueChanged += new System.EventHandler(this.MTBox_ValueChanged);
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(67, 158);
+            this.label3.Location = new System.Drawing.Point(232, 103);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(97, 13);
             this.label3.TabIndex = 6;
             this.label3.Text = "Swaying Threshold";
             // 
-            // STBox
-            // 
-            this.STBox.DecimalPlaces = 2;
-            this.STBox.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.STBox.Location = new System.Drawing.Point(57, 174);
-            this.STBox.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.STBox.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.STBox.Name = "STBox";
-            this.STBox.Size = new System.Drawing.Size(120, 20);
-            this.STBox.TabIndex = 5;
-            this.STBox.Value = new decimal(new int[] {
-            2,
-            0,
-            0,
-            131072});
-            this.STBox.ValueChanged += new System.EventHandler(this.STBox_ValueChanged);
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(67, 197);
+            this.label4.Location = new System.Drawing.Point(43, 167);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(95, 13);
             this.label4.TabIndex = 8;
             this.label4.Text = "Leaning Threshold";
             // 
-            // LTBox
-            // 
-            this.LTBox.DecimalPlaces = 2;
-            this.LTBox.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.LTBox.Location = new System.Drawing.Point(57, 213);
-            this.LTBox.Maximum = new decimal(new int[] {
-            2,
-            0,
-            0,
-            65536});
-            this.LTBox.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.LTBox.Name = "LTBox";
-            this.LTBox.Size = new System.Drawing.Size(120, 20);
-            this.LTBox.TabIndex = 7;
-            this.LTBox.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            131072});
-            this.LTBox.ValueChanged += new System.EventHandler(this.LTBox_ValueChanged);
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(58, 236);
+            this.label5.Location = new System.Drawing.Point(222, 167);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(119, 13);
             this.label5.TabIndex = 10;
             this.label5.Text = "Hinge Check Threshold";
             // 
-            // HTBox
-            // 
-            this.HTBox.DecimalPlaces = 2;
-            this.HTBox.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.HTBox.Location = new System.Drawing.Point(57, 252);
-            this.HTBox.Maximum = new decimal(new int[] {
-            3,
-            0,
-            0,
-            65536});
-            this.HTBox.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.HTBox.Name = "HTBox";
-            this.HTBox.Size = new System.Drawing.Size(120, 20);
-            this.HTBox.TabIndex = 9;
-            this.HTBox.Value = new decimal(new int[] {
-            8,
-            0,
-            0,
-            131072});
-            this.HTBox.ValueChanged += new System.EventHandler(this.HTBox_ValueChanged);
-            // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(41, 80);
+            this.label6.Location = new System.Drawing.Point(205, 39);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(151, 13);
             this.label6.TabIndex = 12;
             this.label6.Text = "Staccato Vs Legato Threshold";
             // 
-            // SVLTBox
-            // 
-            this.SVLTBox.DecimalPlaces = 2;
-            this.SVLTBox.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            131072});
-            this.SVLTBox.Location = new System.Drawing.Point(57, 96);
-            this.SVLTBox.Maximum = new decimal(new int[] {
-            34,
-            0,
-            0,
-            65536});
-            this.SVLTBox.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            65536});
-            this.SVLTBox.Name = "SVLTBox";
-            this.SVLTBox.Size = new System.Drawing.Size(120, 20);
-            this.SVLTBox.TabIndex = 11;
-            this.SVLTBox.Value = new decimal(new int[] {
-            17,
-            0,
-            0,
-            65536});
-            this.SVLTBox.ValueChanged += new System.EventHandler(this.SVLTBox_ValueChanged);
-            // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(82, 275);
+            this.label7.Location = new System.Drawing.Point(31, 231);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(80, 13);
+            this.label7.Size = new System.Drawing.Size(120, 13);
             this.label7.TabIndex = 14;
-            this.label7.Text = "BPM Threshold";
+            this.label7.Text = "BPM Velocity Threshold";
             // 
-            // BPMTBox
+            // svlWS
             // 
-            this.BPMTBox.DecimalPlaces = 3;
-            this.BPMTBox.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            196608});
-            this.BPMTBox.Location = new System.Drawing.Point(57, 291);
-            this.BPMTBox.Maximum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            131072});
-            this.BPMTBox.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.BPMTBox.Name = "BPMTBox";
-            this.BPMTBox.Size = new System.Drawing.Size(120, 20);
-            this.BPMTBox.TabIndex = 13;
-            this.BPMTBox.Value = new decimal(new int[] {
-            25,
-            0,
-            0,
-            196608});
-            this.BPMTBox.ValueChanged += new System.EventHandler(this.BPMTBox_ValueChanged);
+            this.svlWS.LargeChange = 50;
+            this.svlWS.Location = new System.Drawing.Point(31, 55);
+            this.svlWS.Maximum = 150;
+            this.svlWS.Minimum = 50;
+            this.svlWS.Name = "svlWS";
+            this.svlWS.Size = new System.Drawing.Size(120, 45);
+            this.svlWS.SmallChange = 25;
+            this.svlWS.TabIndex = 15;
+            this.svlWS.TickFrequency = 25;
+            this.svlWS.Value = 100;
+            this.svlWS.ValueChanged += new System.EventHandler(this.svlWS_ValueChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(222, 231);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(125, 13);
+            this.label8.TabIndex = 22;
+            this.label8.Text = "BPM Distance Threshold";
+            // 
+            // svlThr
+            // 
+            this.svlThr.LargeChange = 50;
+            this.svlThr.Location = new System.Drawing.Point(221, 55);
+            this.svlThr.Maximum = 150;
+            this.svlThr.Minimum = 50;
+            this.svlThr.Name = "svlThr";
+            this.svlThr.Size = new System.Drawing.Size(120, 45);
+            this.svlThr.SmallChange = 25;
+            this.svlThr.TabIndex = 23;
+            this.svlThr.TickFrequency = 25;
+            this.svlThr.Value = 100;
+            this.svlThr.ValueChanged += new System.EventHandler(this.svlThr_ValueChanged);
+            // 
+            // mirThr
+            // 
+            this.mirThr.LargeChange = 50;
+            this.mirThr.Location = new System.Drawing.Point(31, 119);
+            this.mirThr.Maximum = 150;
+            this.mirThr.Minimum = 50;
+            this.mirThr.Name = "mirThr";
+            this.mirThr.Size = new System.Drawing.Size(120, 45);
+            this.mirThr.SmallChange = 25;
+            this.mirThr.TabIndex = 24;
+            this.mirThr.TickFrequency = 25;
+            this.mirThr.Value = 100;
+            this.mirThr.ValueChanged += new System.EventHandler(this.mirThr_ValueChanged);
+            // 
+            // leaThr
+            // 
+            this.leaThr.LargeChange = 50;
+            this.leaThr.Location = new System.Drawing.Point(31, 183);
+            this.leaThr.Maximum = 150;
+            this.leaThr.Minimum = 50;
+            this.leaThr.Name = "leaThr";
+            this.leaThr.Size = new System.Drawing.Size(120, 45);
+            this.leaThr.SmallChange = 25;
+            this.leaThr.TabIndex = 25;
+            this.leaThr.TickFrequency = 25;
+            this.leaThr.Value = 100;
+            this.leaThr.ValueChanged += new System.EventHandler(this.leaThr_ValueChanged);
+            // 
+            // bpmvThr
+            // 
+            this.bpmvThr.LargeChange = 50;
+            this.bpmvThr.Location = new System.Drawing.Point(31, 247);
+            this.bpmvThr.Maximum = 150;
+            this.bpmvThr.Minimum = 50;
+            this.bpmvThr.Name = "bpmvThr";
+            this.bpmvThr.Size = new System.Drawing.Size(120, 45);
+            this.bpmvThr.SmallChange = 25;
+            this.bpmvThr.TabIndex = 26;
+            this.bpmvThr.TickFrequency = 25;
+            this.bpmvThr.Value = 100;
+            this.bpmvThr.ValueChanged += new System.EventHandler(this.bpmvThr_ValueChanged);
+            // 
+            // swaThr
+            // 
+            this.swaThr.LargeChange = 50;
+            this.swaThr.Location = new System.Drawing.Point(221, 119);
+            this.swaThr.Maximum = 150;
+            this.swaThr.Minimum = 50;
+            this.swaThr.Name = "swaThr";
+            this.swaThr.Size = new System.Drawing.Size(120, 45);
+            this.swaThr.SmallChange = 25;
+            this.swaThr.TabIndex = 27;
+            this.swaThr.TickFrequency = 25;
+            this.swaThr.Value = 100;
+            this.swaThr.ValueChanged += new System.EventHandler(this.swaThr_ValueChanged);
+            // 
+            // hinThr
+            // 
+            this.hinThr.LargeChange = 50;
+            this.hinThr.Location = new System.Drawing.Point(221, 183);
+            this.hinThr.Maximum = 150;
+            this.hinThr.Minimum = 50;
+            this.hinThr.Name = "hinThr";
+            this.hinThr.Size = new System.Drawing.Size(120, 45);
+            this.hinThr.SmallChange = 25;
+            this.hinThr.TabIndex = 28;
+            this.hinThr.TickFrequency = 25;
+            this.hinThr.Value = 100;
+            this.hinThr.ValueChanged += new System.EventHandler(this.hinThr_ValueChanged);
+            // 
+            // bpmdThr
+            // 
+            this.bpmdThr.LargeChange = 50;
+            this.bpmdThr.Location = new System.Drawing.Point(221, 247);
+            this.bpmdThr.Maximum = 150;
+            this.bpmdThr.Minimum = 50;
+            this.bpmdThr.Name = "bpmdThr";
+            this.bpmdThr.Size = new System.Drawing.Size(120, 45);
+            this.bpmdThr.SmallChange = 25;
+            this.bpmdThr.TabIndex = 29;
+            this.bpmdThr.TickFrequency = 25;
+            this.bpmdThr.Value = 100;
+            this.bpmdThr.ValueChanged += new System.EventHandler(this.bpmdThr_ValueChanged);
+            // 
+            // resetButton
+            // 
+            this.resetButton.Location = new System.Drawing.Point(31, 298);
+            this.resetButton.Name = "resetButton";
+            this.resetButton.Size = new System.Drawing.Size(120, 23);
+            this.resetButton.TabIndex = 30;
+            this.resetButton.Text = "Reset to Default";
+            this.resetButton.UseVisualStyleBackColor = true;
+            this.resetButton.Click += new System.EventHandler(this.reset_Click);
             // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(234, 358);
+            this.ClientSize = new System.Drawing.Size(370, 325);
+            this.Controls.Add(this.resetButton);
+            this.Controls.Add(this.bpmdThr);
+            this.Controls.Add(this.hinThr);
+            this.Controls.Add(this.swaThr);
+            this.Controls.Add(this.bpmvThr);
+            this.Controls.Add(this.leaThr);
+            this.Controls.Add(this.mirThr);
+            this.Controls.Add(this.svlThr);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.svlWS);
             this.Controls.Add(this.label7);
-            this.Controls.Add(this.BPMTBox);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.SVLTBox);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.HTBox);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.LTBox);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.STBox);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.MTBox);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.okButton);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.SvLWS);
             this.Name = "SettingsForm";
             this.Text = "SettingsForm";
-            ((System.ComponentModel.ISupportInitialize)(this.SvLWS)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MTBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.STBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.LTBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.HTBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.SVLTBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BPMTBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.svlWS)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.svlThr)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mirThr)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.leaThr)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bpmvThr)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.swaThr)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hinThr)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bpmdThr)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -358,20 +300,23 @@
 
         #endregion
 
-        private System.Windows.Forms.NumericUpDown SvLWS;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.NumericUpDown MTBox;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.NumericUpDown STBox;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.NumericUpDown LTBox;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.NumericUpDown HTBox;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.NumericUpDown SVLTBox;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.NumericUpDown BPMTBox;
+        private System.Windows.Forms.TrackBar svlWS;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TrackBar svlThr;
+        private System.Windows.Forms.TrackBar mirThr;
+        private System.Windows.Forms.TrackBar leaThr;
+        private System.Windows.Forms.TrackBar bpmvThr;
+        private System.Windows.Forms.TrackBar swaThr;
+        private System.Windows.Forms.TrackBar hinThr;
+        private System.Windows.Forms.TrackBar bpmdThr;
+        private System.Windows.Forms.Button resetButton;
     }
 }

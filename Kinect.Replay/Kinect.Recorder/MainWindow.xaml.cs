@@ -25,13 +25,24 @@ namespace Kinect.Recorder
         // Variables for interfacing with Kinect
         private KinectSensor myKinect; // variable to interface with Kinect
         private bool _kinectPresent;
-        
+
+        //Default threshold values
+        private const float SWAY_THRESHOLD = 0.02f; //default swaying threshold
+        private const float LEAN_THRESHOLD = 0.05f; //default leaning/rocking threshold
+        private const float MIRRORING_THRESHOLD = 0.19f; //default mirroring threshold
+        private const float HINGE_THRESHOLD = 0.08f; //default hinge check threshold
+        private const float SVL_THRESHOLD = 2.56f; //default staccato vs legato threshold
+        private const int SVL_WINDOW_SIZE = 100; //default staccato vs legato window size
+        private const float BPM_V_THRESHOLD = 0.012f; //default bpm velocity threshold
+        private const float BPM_D_THRESHOLD = 0.10f; //default bpm distance threshold
+
         // Variables for record/replay/display
         private Kinect.Replay.Record.KinectRecorder newrec; // to handle recording
         private Kinect.Replay.Replay.KinectReplay newrep; // to handle replay
         private bool _isRecording; // recording state (true if recording, false otherwise)
         private bool _isReplaying; // replaying state (true if replaying, false otherwise)
         private StreamWriter file = null;   // for creating .csv file
+
         // Recording options; currently audio is not being recorded (uncomment end of line to reenable audio)
         private const Kinect.Replay.Record.KinectRecordOptions RecordOptions = Kinect.Replay.Record.KinectRecordOptions.Frames/* | KinectRecordOptions.Audio*/;
         
@@ -74,14 +85,14 @@ namespace Kinect.Recorder
         private int swayPtr = 0; // to keep track of location in swaying buffer
         private bool swayFull = false; // to keep track of whether or not the swaying buffer has filled (enough pts for analysis)
         private long swayPct = 0; // to keep track of percentage of frames swaying
-        private float swayThreshold = 0.02f; // threshold of range of motion for no swaying detected
+        private float swayThreshold = SWAY_THRESHOLD; // threshold of range of motion for no swaying detected
 
         // Leaning/rocking (forward and back)
         private float[] pastLeaning = new float[20]; // buffer to check for leaning/rocking
         private int leanPtr = 0; // to keep track of location in leaning buffer
         private bool leanFull = false; // to keep track of whether or not leaning buffer filled (enough pts for analysis)
         private long leanPct = 0; // to keep track of percentage of frames leaning
-        private float leanThreshold = 0.05f; // threshold of range of motion for no leaning detected
+        private float leanThreshold = LEAN_THRESHOLD; // threshold of range of motion for no leaning detected
 
         // Mirroring
         private int mirrorBuffer = 0; // buffer to check for mirroring
@@ -89,8 +100,9 @@ namespace Kinect.Recorder
         private float mirrorThreshold = 0.19f; // threshold for difference in mirrored motion between hands
         
         // Staccato vs Legato
-        private int windowSizeSlider = 100; // window size - from slider.
-        private int windowSize = 100; //window size 
+        private int windowSizeSlider = SVL_WINDOW_SIZE; // window size - from slider.
+        private int windowSize = SVL_WINDOW_SIZE; //window size 
+        private int staccatoPct = 0; //percentage staccato
         private int iterationNum = -4; // -3 indicates a start where we have no prior info about accel and velocity.
         private int startPos = 0; // position in array of first value
         private DateTime[] SLTimes = new DateTime[302]; // array that stores the time of recording positions
@@ -104,7 +116,7 @@ namespace Kinect.Recorder
         private int rhPeakCount = 0; //number of peaks in right hand
         private float lhPeakAvg = 0; //avg peak in left hand
         private float rhPeakAvg = 0; //avg peak in right hand
-        private float SvLThreshold = 2.56F; // threshold for Legato (less than this - legato, greater than is Staccato)
+        private float SvLThreshold = SVL_THRESHOLD; // threshold for Legato (less than this - legato, greater than is Staccato)
 
         //BPM
         private DateTime[] bpmlastBeats = new DateTime[20]; // store the times of recorded beats
@@ -113,8 +125,9 @@ namespace Kinect.Recorder
         private int framesSinceBeat = 0;//keep track of how many frames since last beat
         private float BPM = 0; //BPM to be displayed
         private float BPMAvg = 0; //moving average of BPM
-        private float BPMVthreshold = 0.012F; //threshold for BPM - velocity
-        private float BPMDthreshold = 0.10F; //threshold for bpm - distance
+        private float totalBPM = 0; //total average of BPM
+        private float BPMVthreshold = BPM_V_THRESHOLD; //threshold for BPM - velocity
+        private float BPMDthreshold = BPM_D_THRESHOLD; //threshold for bpm - distance
 
 
         // Hinges
@@ -125,7 +138,7 @@ namespace Kinect.Recorder
         private SkeletonPoint leLast; // to keep track of the last position of the left elbow
         private SkeletonPoint reLast; // to keep track of the last position of the right elbow
         private long hingePct = 0; // to keep track of percentage of frames with too much hinge movement
-        private float hingeThreshold = 0.08f; // the threshold for detection
+        private float hingeThreshold = HINGE_THRESHOLD; // the threshold for detection
 
         #endregion
 
@@ -799,38 +812,39 @@ namespace Kinect.Recorder
             swayPtr = 0; // to keep track of location in swaying buffer
             swayFull = false; // to keep track of whether or not the swaying buffer has filled (enough pts for analysis)
             swayPct = 0; // to keep track of percentage of frames swaying
-            swayThreshold = 0.02F;
+            swayThreshold = SWAY_THRESHOLD;
             Swaying = "";
 
             // Leaning/rocking (forward and back)
             leanPtr = 0; // to keep track of location in leaning buffer
             leanFull = false; // to keep track of whether or not leaning buffer filled (enough pts for analysis)
             leanPct = 0; // to keep track of percentage of frames leaning
-            leanThreshold = 0.05F;
+            leanThreshold = LEAN_THRESHOLD;
             Leaning = "";
 
             // Mirroring
             mirrorBuffer = 0;
             mirrorPct = 0;
-            mirrorThreshold = 0.19F;
+            mirrorThreshold = MIRRORING_THRESHOLD;
             Mirroring = "";
 
             // Hinges
             hingePtr = 0;
             hingeFull = false;
             hingePct = 0; // to keep track of percentage of frames with too much hinge movement
-            mirrorThreshold = 0.08F;
+            mirrorThreshold = HINGE_THRESHOLD;
             
 
             //SVL
-            windowSizeSlider = 100;
-            windowSize = 100;
+            windowSizeSlider = SVL_WINDOW_SIZE;
+            windowSize = SVL_WINDOW_SIZE;
             iterationNum = -4;
             startPos = 0; 
             lhPeakCount = 0;
             rhPeakCount = 0;
             lhPeakAvg = 0;
             rhPeakAvg = 0;
+            staccatoPct = 0;
             SLVelocs = new float[10,302];
             SLDist = new float[6,302];
             SLTimes = new DateTime[302];
@@ -840,21 +854,25 @@ namespace Kinect.Recorder
                 SLPeaks[1, i] = false;
             }
             SvsL = "";
-            SvLThreshold = 2.56F;
+            SvLThreshold = SVL_THRESHOLD;
 
             //BPM
+            bpmlastBeats = new DateTime[20];
             bpmPos = 0;
-            bpmlastBeats = new DateTime[4];
-            beatCounter = 0;
+            beatCounter = 0; 
+            framesSinceBeat = 0;
             BPM = 0;
-            BPMFB = "";
-            BPMVthreshold = 20.0F;
+            totalBPM = 0;
+            BPMAvg = 0; 
+            BPMVthreshold = BPM_V_THRESHOLD; 
+            BPMDthreshold = BPM_D_THRESHOLD; 
 
             //Brushes
             MirroringBG = neutralBrush;
             SwayingBG = neutralBrush;
             LeaningBG = neutralBrush;
             SvsLBG = neutralBrush;
+            HingeBG = neutralBrush;
 
             SkeletonCanvas.Children.Clear(); // clear skeleton on canvas
 
@@ -894,15 +912,28 @@ namespace Kinect.Recorder
         //open settings window
         private void settings_Click(object sender, RoutedEventArgs e)
         {
-            SettingsForm settings = new SettingsForm(windowSizeSlider, mirrorThreshold, swayThreshold, leanThreshold, hingeThreshold, SvLThreshold, BPMVthreshold);
+            //Convert all of the current settings into percentage integers to be used with the sliders
+            int WSSmult = Convert.ToInt32(windowSizeSlider * 100 / SVL_WINDOW_SIZE);
+            int MTmult = Convert.ToInt32(mirrorThreshold * 100 / MIRRORING_THRESHOLD);
+            int STmult = Convert.ToInt32(swayThreshold * 100 / SWAY_THRESHOLD);
+            int LTmult = Convert.ToInt32(leanThreshold * 100 / LEAN_THRESHOLD);
+            int HTmult = Convert.ToInt32(hingeThreshold * 100 / HINGE_THRESHOLD);
+            int SVLTmult = Convert.ToInt32(SvLThreshold * 100 / SVL_THRESHOLD);
+            int BVTmult = Convert.ToInt32(BPMVthreshold * 100 / BPM_V_THRESHOLD);
+            int BDTmult = Convert.ToInt32(BPMDthreshold * 100 / BPM_D_THRESHOLD);
+
+            SettingsForm settings = new SettingsForm(WSSmult, MTmult, STmult, LTmult, HTmult, SVLTmult, BVTmult, BDTmult);
             settings.ShowDialog();
+
+            //Convert the percentage integers back into the float thresholds
             windowSizeSlider = settings.windowSize;
-            mirrorThreshold = settings.mirThresh;
-            swayThreshold = settings.swayThresh;
-            leanThreshold = settings.leanThresh;
-            hingeThreshold = settings.hingeThresh;
-            SvLThreshold = settings.svlThresh;
-            BPMVthreshold = settings.bpmThresh;
+            mirrorThreshold = MIRRORING_THRESHOLD * ((float)settings.mirThresh) / 100;
+            swayThreshold = SWAY_THRESHOLD * ((float)settings.swayThresh) / 100;
+            leanThreshold = LEAN_THRESHOLD * ((float)settings.leanThresh) / 100;
+            hingeThreshold = HINGE_THRESHOLD * ((float)settings.hingeThresh) / 100;
+            SvLThreshold = SVL_THRESHOLD * ((float)settings.svlThresh) / 100;
+            BPMVthreshold = BPM_V_THRESHOLD * ((float)settings.bpmvThresh) / 100;
+            BPMDthreshold = BPM_D_THRESHOLD * ((float)settings.bpmdThresh) / 100;
         }
         #endregion
 
@@ -1219,10 +1250,14 @@ namespace Kinect.Recorder
                 }
                 SvsL = "Pk: " + SLPeaks[0, lastPos] + "/" + SLPeaks[1, lastPos] + " #Pks: " + lhPeakCount + "/" + rhPeakCount + " PkAvg: " + lhPeakAvg + "/" + rhPeakAvg; //Display peak information
                 if (rhPeakAvg < SvLThreshold) // If we are under the Staccato threshold, we are legato, so update the brush accordingly
+                {
                     SvsLBG = legatoBrush;
-                
+                }
                 else //we are not legato, so update the brush.
+                {
                     SvsLBG = staccatoBrush;
+                    staccatoPct++;
+                }
             }
             iterationNum++;
         }
@@ -1256,10 +1291,11 @@ namespace Kinect.Recorder
                 TimeSpan diff = bpmlastBeats[lastBeatPos].Subtract(bpmlastBeats[bpmPos]); //calculate the difference between the most recent (lastBeatPos) and the oldest (bpmPos)
                 float diffTime = (float)diff.TotalSeconds;  //convert the total seconds to a float in order to calculate the BPM
                 BPM = 60*9 / diffTime; //Since we are using the difference over the last 10 beats using difference in seconds, we divide 60 seconds/min * 9 beats by the difference in time
+                totalBPM = ((totalBPM * beatCounter) + (BPM)) / beatCounter;
             }
             if (BPMAvg == 0) //the first time we calculate the bpm, the Avg will be 0 so we instead just update it to the calculated number
                 BPMAvg = BPM;
-            else //this makes the change in detected BPM look smoother for the user
+            else
                 BPMAvg = (BPMAvg * 9 + BPM) / 10; //calculate moving average
             BPMFB = "BPM: " + Math.Round(BPMAvg, 0);
         }
@@ -1382,7 +1418,18 @@ namespace Kinect.Recorder
                     hingebrush = goodBrush;
                 }
             } // close if statement for full buffer
-        } // end hingeCheck method
+        } //end hingecheck
+
+        private void save_Click(object sender, RoutedEventArgs e)
+        /* This method handles the things that occur once the save button is clicked.
+         * Parameters: 
+         *  object sender - sender of click (not used)
+         *  RoutedEventArgs e - arguments for click event (not used)
+         * Results:
+         *  Results of conducting trial are printed to a text file, then go back to initial state. */
+        {
+
+        }
 
         #endregion
     }

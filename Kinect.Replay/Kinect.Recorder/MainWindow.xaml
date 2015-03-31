@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Loaded="MainWindowLoaded"
         DataContext="{Binding RelativeSource={RelativeSource Self}}" 
-        SizeToContent="WidthAndHeight" Height="733.157">
+        SizeToContent="WidthAndHeight" Height="645.097">
     <Window.Resources>
         <Style TargetType="Button" x:Key="RecordButton">
             <Setter Property="Content" Value="Record" />
@@ -36,8 +36,8 @@
         </Style>
     </Window.Resources>
     <StackPanel>
-        <TextBlock Text="Kinect Conducting Recorder" FontSize="28" HorizontalAlignment="Center" Height="25"/>
-        <TextBlock Text="{Binding Message}" FontSize="24" Foreground="Red" HorizontalAlignment="Left" Margin="5"/>
+        <TextBlock Text="Kinect Conducting Recorder" FontSize="28" HorizontalAlignment="Center" Height="38"/>
+        <TextBlock Text="{Binding Message}" FontSize="20" Foreground="Red" HorizontalAlignment="Left" Margin="5"/>
         <StackPanel Orientation="Horizontal" Margin="3">
             <!--This is the display-->
             <StackPanel Orientation="Vertical">
@@ -46,7 +46,7 @@
                     <Canvas Name="SkeletonCanvas" Height="480" Width="640" HorizontalAlignment="Center" Background="Transparent" />
                 </Grid>
             </StackPanel>
-            <StackPanel Orientation="Vertical" Background="AliceBlue" Width="400" Height="638">
+            <StackPanel Orientation="Vertical" Background="AliceBlue" Width="400" Height="541">
                 <!--This is the button panel-->
                 <StackPanel Orientation="Vertical" Width="300" Margin="10">
                     <StackPanel Orientation="Horizontal">
@@ -54,31 +54,32 @@
                         <Button Click="RecordClick" Style="{StaticResource RecordButton}" Width="95" />
                         <Button Click="ReplayClick" Style="{StaticResource ReplayButton}" Width="95" />
                     </StackPanel>
-                    <Button x:Name="upButton" Content="Tilt Up" FontSize="15" Click="upButton_Click" Margin="50,2" Width="200" />
-                    <Button x:Name="downButton" Content="Tilt Down" FontSize="15" Click="downButton_Click" Margin="50,2" Width="200" />
-                    <Button x:Name="resetButton" Content="Reset" FontSize="15" Click="reset_Click" Width="200" Margin="50,2" />
-                    <Button x:Name="SettingsButton" Content="Settings" FontSize="15" Click="settings_Click" Width="200" Margin="50,2
-                            " />
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Width="45"/>
+                            <Button x:Name="upButton" Content="Tilt Up" FontSize="15" Click="upButton_Click" Margin="5,0" Width="95" />
+                            <Button x:Name="downButton" Content="Tilt Down" FontSize="15" Click="downButton_Click" Margin="5,0" Width="95" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Width="45"/>
+                            <Button x:Name="resetButton" Content="Reset" FontSize="15" Click="reset_Click" Width="95" Margin="5,5" />
+                            <Button x:Name="SettingsButton" Content="Settings" FontSize="15" Click="settings_Click" Width="95" Margin="5,5" />
+                    </StackPanel>
+                    <Button x:Name="saveButton" Content="Save Results" FontSize="15" Click="settings_Click" Width="200" Margin="5,0" />
                 </StackPanel>
-                <StackPanel Height="60" Margin="25,10,10,0" Background="{Binding MirroringBG}">
-                    <TextBlock Text="Mirroring" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="0"/>
-                    <TextBlock Text="{Binding Mirroring}" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="10"/>
+                <StackPanel Height="40" Margin="25,10,10,0" Background="{Binding MirroringBG}">
+                    <TextBlock Text="{Binding Mirroring}" FontSize="24" Foreground="Black" HorizontalAlignment="Center" Margin="10"/>
                 </StackPanel>
-                <StackPanel Height="60" Margin="25,10,10,0" Background="{Binding SwayingBG}">
-                    <TextBlock Text="Swaying" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="0"/>
-                    <TextBlock Text="{Binding Swaying}" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="10"/>
+                <StackPanel Height="40" Margin="25,10,10,0" Background="{Binding SwayingBG}">
+                    <TextBlock Text="{Binding Swaying}" FontSize="24" Foreground="Black" HorizontalAlignment="Center" Margin="10"/>
                 </StackPanel>
-                <StackPanel Height="60" Margin="25,10,10,0" Background="{Binding LeaningBG}">
-                    <TextBlock Text="Leaning" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="0"/>
-                    <TextBlock Text="{Binding Leaning}" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="10"/>
+                <StackPanel Height="40" Margin="25,10,10,0" Background="{Binding LeaningBG}">
+                    <TextBlock Text="{Binding Leaning}" FontSize="24" Foreground="Black" HorizontalAlignment="Center" Margin="10"/>
                 </StackPanel>
-                <StackPanel Height="60" Margin="25,10,10,0" Background="{Binding SvsLBG}">
-                    <TextBlock Text="Staccato/Legato" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="0"/>
-                    <TextBlock Text="{Binding SvsL}" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="10"/>
+                <StackPanel Height="40" Margin="25,10,10,0" Background="{Binding SvsLBG}">
+                    <TextBlock Text="{Binding SvsL}" FontSize="24" Foreground="Black" HorizontalAlignment="Center" Margin="10"/>
                 </StackPanel>
-                <StackPanel Height="60" Margin="25,10,10,0" Background="{Binding HingeBG}">
-                    <TextBlock Text="Excessive Hinge Movement" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="0"/>
-                    <TextBlock Text="{Binding Hinge}" FontSize="14" Foreground="Black" HorizontalAlignment="Center" Margin="10"/>
+                <StackPanel Height="40" Margin="25,10,10,0" Background="{Binding HingeBG}">
+                    <TextBlock Text="{Binding Hinge}" FontSize="24" Foreground="Black" HorizontalAlignment="Center" Margin="10"/>
                 </StackPanel>
                 <TextBlock Text="{Binding BPMFB}" FontSize="24" Foreground="Black" Margin="0,10,100,10" HorizontalAlignment="Right" Width="200"/>
                 <Ellipse Fill="{Binding BPMBG}" Height="51" Stroke="Black" Margin="175,0,0,0" RenderTransformOrigin="0.469,0.506" HorizontalAlignment="Left" Width="51"/>
