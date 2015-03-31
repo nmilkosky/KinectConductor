@@ -42,9 +42,9 @@ namespace Kinect.Recorder
          *      the location, times, and velocity arrays are updated with the most recent information.
          * */
             location[0, locationCounter] = x; //assign x position
-            Console.Write("X: " + x + "\n");
+            //Console.Write("X: " + x + "\n");
             location[1, locationCounter] = y; //assign y position
-            Console.Write("Y: " + y + "\n");
+            //Console.Write("Y: " + y + "\n");
             //location[2, locationCounter] = z; //assign z position
             times[locationCounter] = DateTime.Now; //record current time
             float timeDiff = 0;
@@ -54,7 +54,7 @@ namespace Kinect.Recorder
                 //Console.Write("Time Diff: " + timeDiff + "\n");
                 velocity[0, locationCounter] = (x - location[0, locationCounter - 1]); //calculate x velocity
                 velocity[1, locationCounter] = (y - location[1, locationCounter - 1]); //calc y velocity
-                Console.Write("Velocity: " + velocity[0, locationCounter] + " | " + velocity[1, locationCounter] + "\n");
+                //Console.Write("Velocity: " + velocity[0, locationCounter] + " | " + velocity[1, locationCounter] + "\n");
                 //velocity[2, locationCounter] = (z - location[1, locationCounter - 1]) / timeDiff; //calc z velocity
                 velocity[3, locationCounter] = (float)Math.Atan2(velocity[1, locationCounter], velocity[0, locationCounter]); //calculate absolute velocity - using sum of squares w/o
                                              //+ (velocity[1, locationCounter] * velocity[1, locationCounter]);//square root to save computations
@@ -118,15 +118,15 @@ namespace Kinect.Recorder
             leftAvgY = leftAvgY / (index.Length / 2);
             rightAvgX = rightAvgX / (index.Length / 2);
             rightAvgY = rightAvgY / (index.Length / 2);
-            Console.Write("Avges: " + (leftAvgX) + " | " + (rightAvgX) +  " || " + leftAvgY + " | " + rightAvgY +  "\n");
+            //Console.Write("Avges: " + (leftAvgX) + " | " + (rightAvgX) +  " || " + leftAvgY + " | " + rightAvgY +  "\n");
             //If the two sides are oppositely signed, and sufficiently different to believe they are a beat for X and Y
             bool XBeat = ((leftAvgX < 0 && rightAvgX > 0) || (rightAvgX < 0 && leftAvgX > 0)) && (Math.Abs(rightAvgX - leftAvgX) > vThreshold);
             bool YBeat = ((leftAvgY < 0 && rightAvgY > 0) || (rightAvgY < 0 && leftAvgY > 0)) && (Math.Abs(rightAvgY - leftAvgY) > vThreshold);
             //Make sure it is a sufficent distance away from the last beat (if it's false, that means it is too close, true means it is sufficiently far to be its own beat).
             float distance = Math.Abs((lastBeatLoc[0]*lastBeatLoc[0] + lastBeatLoc[1]*lastBeatLoc[1]) - (location[0,checkLocation]*location[0,checkLocation] + location[1,checkLocation]*location[1,checkLocation])); // no sqrt to save computation
             bool notTooClose = (distance > dThreshold*dThreshold);
-            Console.Write(notTooClose);
-            Console.Write("\n Distance: " + distance + "\n");
+            //Console.Write(notTooClose);
+            //Console.Write("\n Distance: " + distance + "\n");
             if ((XBeat || YBeat) && notTooClose)
             {
                 lastBeatLoc[0] = location[0, checkLocation]; // update the last beat location

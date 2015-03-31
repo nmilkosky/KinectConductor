@@ -1467,7 +1467,5 @@ namespace Kinect.Recorder
         }
 
         #endregion
-
-        
     }
 }
