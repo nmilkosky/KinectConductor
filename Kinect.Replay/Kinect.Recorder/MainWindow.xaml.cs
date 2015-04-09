@@ -46,6 +46,7 @@ namespace Kinect.Recorder
         private bool _isRecording; // recording state (true if recording, false otherwise)
         private bool _isReplaying; // replaying state (true if replaying, false otherwise)
         private StreamWriter file = null;   // for creating .csv file
+        private DateTime initialTime; //for displaying length of recording
 
         // Recording options; currently audio is not being recorded (uncomment end of line to reenable audio)
         private const Kinect.Replay.Record.KinectRecordOptions RecordOptions = Kinect.Replay.Record.KinectRecordOptions.Frames/* | KinectRecordOptions.Audio*/;
@@ -458,6 +459,7 @@ namespace Kinect.Recorder
             LeaningBG = neutralBrush;
             SvsLBG = neutralBrush;
             HingeBG = neutralBrush;
+            initialTime = DateTime.Now;
         }
 
         // check for changed properties
@@ -688,18 +690,20 @@ namespace Kinect.Recorder
 			if (IsRecording)
 			{
 				newrec.Stop();
+                save_Click(null, null);
 				newrec = null;
 				IsRecording = false;
 				Message = "";
 				return;
 			}
-			var saveFileDialog = new SaveFileDialog { Title = "Select filename", Filter = "Replay files|*.replay" };
-			if (saveFileDialog.ShowDialog() != true) return;
+			//var saveFileDialog = new SaveFileDialog { Title = "Select filename", Filter = "Replay files|*.replay" };
+			//if (saveFileDialog.ShowDialog() != true) return;
+            String filename = FILE_PREFIX + studentNo.ToString("D3");
 
-			newrec = new KinectRecorder(RecordOptions, saveFileDialog.FileName, myKinect);
+			newrec = new KinectRecorder(RecordOptions, (filename + ".replay"), myKinect);
 			Message = string.Format("Recording {0}", RecordOptions.ToString());
 
-            file = new StreamWriter(saveFileDialog.FileName + ".csv", true);
+            file = new StreamWriter(filename + ".csv", true);
 
             // Creates the headers for the .csv file
             string header = "Time Interval,Left Hand X,Left Hand Y,Left Hand Z,Right Hand X,Right Hand Y,Right Hand Z,";
@@ -708,7 +712,7 @@ namespace Kinect.Recorder
             header += "Left Shoulder X,Left Shoulder Y,Left Shoulder Z,Right Shoulder X,Right Shoulder Y,Right Shoulder Z,";
             header += "Center Shoulder X,Center Shoulder Y,Center Shoulder Z,Head X,Head Y,Head Z";
             file.WriteLine(header);
-
+            reset_Click(null, null);
             // Uncomment the following to reenable audio
 			//newrec.StartAudioRecording();
 			IsRecording = true;
@@ -1441,7 +1445,9 @@ namespace Kinect.Recorder
         {
             String filename = FILE_PREFIX + studentNo.ToString("D3") + ".txt"; //studentNo.ToString("D3") displays it in decimal format with 3 digits (padding with 0 until there are 3)
             System.IO.StreamWriter reportFile = new StreamWriter(filename);
-            reportFile.WriteLine("Student Report #" + studentNo);
+            TimeSpan lengthOfRec = DateTime.Now.Subtract(initialTime);
+            String timeString = lengthOfRec.Minutes.ToString() + "m " + lengthOfRec.Seconds.ToString() + "s";
+            reportFile.WriteLine("Student Report #" + studentNo + " Length: " + timeString);
             reportFile.WriteLine("--------------------------------------------------");
             reportFile.WriteLine("Mirroring Percent: " + ((double)mirrorPct / totalPct).ToString("P")); // .ToString("P") converts a double to a percent (ex from .267 -> 26.7%)
             reportFile.WriteLine("Swaying Percent: " + ((double)swayPct / totalPct).ToString("P"));
