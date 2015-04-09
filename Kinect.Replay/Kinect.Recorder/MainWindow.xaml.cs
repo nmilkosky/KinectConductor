@@ -1262,6 +1262,10 @@ namespace Kinect.Recorder
                 //Below is debug output
                 //SvsL = "Pk: " + SLPeaks[0, lastPos] + "/" + SLPeaks[1, lastPos] + " #Pks: " + lhPeakCount + "/" + rhPeakCount + " PkAvg: " + lhPeakAvg + "/" + rhPeakAvg; //Display peak information
                 SvsL = "Staccato: " + ((double)staccatoPct / totalPct).ToString("P");
+                if(float.IsNaN(rhPeakAvg) || float.IsNaN(lhPeakAvg))
+                {
+                    Console.Write("NAN\n");
+                }
                 if (rhPeakAvg < SvLThreshold) // If we are under the Staccato threshold, we are legato, so update the brush accordingly
                 {
                     SvsLBG = legatoBrush;
