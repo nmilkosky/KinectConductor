@@ -35,8 +35,8 @@ namespace Kinect.Recorder
         private const float HINGE_THRESHOLD = 0.08f; //default hinge check threshold
         private const float SVL_THRESHOLD = 2.56f; //default staccato vs legato threshold
         private const int SVL_WINDOW_SIZE = 100; //default staccato vs legato window size
-        private const float BPM_V_THRESHOLD = 0.012f; //default bpm velocity threshold
-        private const float BPM_D_THRESHOLD = 0.10f; //default bpm distance threshold
+        private const float BPM_V_THRESHOLD = 0.008f; //default bpm velocity threshold
+        private const float BPM_D_THRESHOLD = 0.070f; //default bpm distance threshold
         private const String FILE_PREFIX = "StudentReport"; //title for file name of report generation
         private const Key SAVE_RESULTS_KEY = Key.O;
 
@@ -84,7 +84,7 @@ namespace Kinect.Recorder
         private int readyPtr = 0; // to keep track of location in  ready buffer
         private float[] pastReady = new float[20]; // buffer to look for ready state
         private long totalPct = 0; // to keep track of total frames for percentages
-        private int studentNo = 1; //keeps track of the number of the student that is being analyzed - in order to output to file
+        private int studentNo = 7; //keeps track of the number of the student that is being analyzed - in order to output to file
 
         // Swaying (side to side)
         private float[] pastSwaying = new float[20]; // buffer to check for swaying
@@ -241,7 +241,7 @@ namespace Kinect.Recorder
                 PropertyChanged.Raise(() => BPMFB);
             }
         }
-        //Mirroing Background brush
+        //Mirroring Background brush
         public SolidColorBrush MirroringBG
         {
             get { return mirbrush; }
@@ -817,6 +817,7 @@ namespace Kinect.Recorder
             readyPtr = 0; // to keep track of location in  ready buffer
             totalPct = 0; // to keep track of total frames for percentages
             pastReady = new float[20]; //past ready
+            initialTime = DateTime.Now;
             
             //Swaying 
             swayPtr = 0; // to keep track of location in swaying buffer
@@ -1264,7 +1265,7 @@ namespace Kinect.Recorder
                 SvsL = "Staccato: " + ((double)staccatoPct / totalPct).ToString("P");
                 if(float.IsNaN(rhPeakAvg) || float.IsNaN(lhPeakAvg))
                 {
-                    Console.Write("NAN\n");
+                    Console.Write("NAN on frame: " + totalPct + "\n");
                 }
                 if (rhPeakAvg < SvLThreshold) // If we are under the Staccato threshold, we are legato, so update the brush accordingly
                 {
@@ -1433,6 +1434,7 @@ namespace Kinect.Recorder
                 }
                 else
                 {
+                    Hinge = "Excessive Hinge Movement: " + string.Format("{0:0.0}", percent) + "%";
                     HingeBG = goodBrush;
                 }
                 
