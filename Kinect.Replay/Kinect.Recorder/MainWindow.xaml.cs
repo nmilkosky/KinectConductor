@@ -35,7 +35,7 @@ namespace Kinect.Recorder
         private const float HINGE_THRESHOLD = 0.08f; //default hinge check threshold
         private const float SVL_THRESHOLD = 2.56f; //default staccato vs legato threshold
         private const int SVL_WINDOW_SIZE = 100; //default staccato vs legato window size
-        private const float BPM_V_THRESHOLD = 0.008f; //default bpm velocity threshold
+        private const float BPM_V_THRESHOLD = 0.24f; //default bpm velocity threshold
         private const float BPM_D_THRESHOLD = 0.070f; //default bpm distance threshold
         private const String FILE_PREFIX = "StudentReport"; //title for file name of report generation
         private const Key SAVE_RESULTS_KEY = Key.O;

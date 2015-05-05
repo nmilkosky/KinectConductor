@@ -52,8 +52,8 @@ namespace Kinect.Recorder
             {
                 timeDiff = (float)((times[locationCounter].Subtract(times[locationCounter - 1])).TotalSeconds); //calculate the time difference between the last two data points in seconds
                 //Console.Write("Time Diff: " + timeDiff + "\n");
-                velocity[0, locationCounter] = (x - location[0, locationCounter - 1]); //calculate x velocity
-                velocity[1, locationCounter] = (y - location[1, locationCounter - 1]); //calc y velocity
+                velocity[0, locationCounter] = (x - location[0, locationCounter - 1]) / timeDiff; //calculate x velocity
+                velocity[1, locationCounter] = (y - location[1, locationCounter - 1]) / timeDiff; //calc y velocity
                 //Console.Write("Velocity: " + velocity[0, locationCounter] + " | " + velocity[1, locationCounter] + "\n");
                 //velocity[2, locationCounter] = (z - location[1, locationCounter - 1]) / timeDiff; //calc z velocity
                 velocity[3, locationCounter] = (float)Math.Atan2(velocity[1, locationCounter], velocity[0, locationCounter]); //calculate absolute velocity - using sum of squares w/o
